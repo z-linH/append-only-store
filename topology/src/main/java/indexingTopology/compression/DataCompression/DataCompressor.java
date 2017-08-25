@@ -2,9 +2,9 @@ package indexingTopology.compression.DataCompression;
 
 import indexingTopology.common.data.DataSchema;
 import indexingTopology.common.data.DataTuple;
+import indexingTopology.compression.Compressor;
 import indexingTopology.compression.CompressorFactory;
 
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -13,135 +13,87 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-public class Compressor {
+public class DataCompressor {
     public DataSchema init(){
         DataSchema schema = new DataSchema();
-        schema.addDoubleField("data_time");
-        schema.addDoubleField("DJClnV");
-        schema.addDoubleField("DJClnA");
-        schema.addDoubleField("FDJClnA");
-        schema.addDoubleField("DJSpeed");
-        schema.addDoubleField("DJTemp");
-        schema.addDoubleField("DJCTemp");
-        schema.addDoubleField("FDJTemp");
-        schema.addDoubleField("FDJCTemp");
-        schema.addDoubleField("driver_status");
-        schema.addDoubleField("gear");
-        schema.addDoubleField("neutralg");
-        schema.addDoubleField("reverseg");
-        schema.addDoubleField("driveg");
-        schema.addDoubleField("climbing_mode");
-        schema.addDoubleField("power_mode");
-        schema.addDoubleField("high_V_switch");
-        schema.addDoubleField("capacity_contactor");
-        schema.addDoubleField("capacity_charge_switch");
-        schema.addDoubleField("battery_contactor");
-        schema.addDoubleField("battery_charge_switch");
-        schema.addDoubleField("aircon");
-        schema.addDoubleField("charge_signal");
-        schema.addDoubleField("FDJwork");
-        schema.addDoubleField("ebraking");
-        schema.addDoubleField("DJworkmode");
-        schema.addDoubleField("FDJworkmode");
-        schema.addDoubleField("VCU");
-        schema.addDoubleField("sys_status");
-        schema.addDoubleField("engine_speed");
-        schema.addDoubleField("engine_wtemp");
-        schema.addDoubleField("engine_load");
-        schema.addDoubleField("NSGYW");
-        schema.addDoubleField("engine_target_throttle");
-        schema.addDoubleField("engine_real_throttle");
-        schema.addDoubleField("VCLIFE");
-        schema.addDoubleField("tow_pedal");
-        schema.addDoubleField("brake_pedal");
-        schema.addDoubleField("engine_oil_pressure");
-        schema.addDoubleField("engine_air_temp");
-        schema.addDoubleField("engine_oil_gas");
-        schema.addDoubleField("DCDC_start");
-        schema.addDoubleField("DCAC_turn");
-        schema.addDoubleField("DCAC_turn_mode");
-        schema.addDoubleField("DCAC_air_compressor");
-        schema.addDoubleField("a1");
-        schema.addDoubleField("a2");
-        schema.addDoubleField("a3");
-        schema.addDoubleField("a4");
-        schema.addDoubleField("a5");
-        schema.addDoubleField("a6");
-        schema.addDoubleField("a7");
-        schema.addDoubleField("a8");
-        schema.addDoubleField("version");
-        schema.addDoubleField("instant_gas");
-        schema.addDoubleField("bi_DCDC_error");
-        schema.addDoubleField("DCDC_error");
-        schema.addDoubleField("lubro_pump_power_DCAC_error");
-        schema.addDoubleField("air_pump_power_DCAC_error");
-        schema.addDoubleField("battery_total_V");
-        schema.addDoubleField("charge_discharge_A");
-        schema.addDoubleField("soc");
-        schema.addDoubleField("statusFlag1");
-        schema.addDoubleField("statusFlag2");
-        schema.addDoubleField("statusFlag3");
-        schema.addDoubleField("battery_max_mono_V");
-        schema.addDoubleField("battery_max_mono_V_no");
-        schema.addDoubleField("battery_max_mono_V_pos");
-        schema.addDoubleField("battery_max_temp");
-        schema.addDoubleField("battery_max_temp_no");
-        schema.addDoubleField("battery_max_temp_pos");
-        schema.addDoubleField("battery_min_mono_V");
-        schema.addDoubleField("battery_min_mono_V_no");
-        schema.addDoubleField("battery_min_mono_V_pos");
+        schema.addFloatField("data_time");
+        schema.addFloatField("DJClnV");
+        schema.addFloatField("DJClnA");
+        schema.addFloatField("FDJClnA");
+        schema.addFloatField("DJSpeed");
+        schema.addByteField("DJTemp");
+        schema.addByteField("DJCTemp");
+        schema.addByteField("FDJTemp");
+        schema.addByteField("FDJCTemp");
+        schema.addByteField("driver_status");
+        schema.addByteField("gear");
+        schema.addByteField("neutralg");
+        schema.addByteField("reverseg");
+        schema.addByteField("driveg");
+        schema.addByteField("climbing_mode");
+        schema.addByteField("power_mode");
+        schema.addByteField("high_V_switch");
+        schema.addByteField("capacity_contactor");
+        schema.addByteField("capacity_charge_switch");
+        schema.addByteField("battery_contactor");
+        schema.addByteField("battery_charge_switch");
+        schema.addByteField("aircon");
+        schema.addByteField("charge_signal");
+        schema.addByteField("FDJwork");
+        schema.addByteField("ebraking");
+        schema.addByteField("DJworkmode");
+        schema.addByteField("FDJworkmode");
+        schema.addByteField("VCU");
+        schema.addShortField("sys_status");
+        schema.addFloatField("engine_speed");
+        schema.addByteField("engine_wtemp");
+        schema.addByteField("engine_load");
+        schema.addFloatField("NSGYW");
+        schema.addFloatField("engine_target_throttle");
+        schema.addFloatField("engine_real_throttle");
+        schema.addShortField("VCLIFE");
+        schema.addFloatField("tow_pedal");
+        schema.addFloatField("brake_pedal");
+        schema.addShortField("engine_oil_pressure");
+        schema.addByteField("engine_air_temp");
+        schema.addFloatField("engine_oil_gas");
+        schema.addShortField("DCDC_start");
+        schema.addShortField("DCAC_turn");
+        schema.addShortField("DCAC_turn_mode");
+        schema.addShortField("DCAC_air_compressor");
+        schema.addIntField("a1");
+        schema.addIntField("a2");
+        schema.addIntField("a3");
+        schema.addShortField("a4");
+        schema.addByteField("a5");
+        schema.addShortField("a6");
+        schema.addShortField("a7");
+        schema.addFloatField("a8");
+        schema.addFloatField("version");
+        schema.addFloatField("instant_gas");
+        schema.addShortField("bi_DCDC_error");
+        schema.addShortField("DCDC_error");
+        schema.addShortField("lubro_pump_power_DCAC_error");
+        schema.addShortField("air_pump_power_DCAC_error");
+        schema.addFloatField("battery_total_V");
+        schema.addFloatField("charge_discharge_A");
+        schema.addFloatField("soc");
+        schema.addByteField("statusFlag1");
+        schema.addByteField("statusFlag2");
+        schema.addByteField("statusFlag3");
+        schema.addFloatField("battery_max_mono_V");
+        schema.addByteField("battery_max_mono_V_no");
+        schema.addByteField("battery_max_mono_V_pos");
+        schema.addByteField("battery_max_temp");
+        schema.addByteField("battery_max_temp_no");
+        schema.addByteField("battery_max_temp_pos");
+        schema.addFloatField("battery_min_mono_V");
+        schema.addByteField("battery_min_mono_V_no");
+        schema.addByteField("battery_min_mono_V_pos");
         return schema;
     }
-    public void Test(){
 
-    }
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-    public Long DataStringToLong(String str) throws ParseException {
-        Date data = sdf.parse(str);
-        Long l = data.getTime();
-        return l;
-    }
-
-    public Integer FloatString1ToInt(String str){
-        float fl = Float.parseFloat(str);
-        int Scale = 1;
-        int roundingMode = 4;
-        BigDecimal bd = new BigDecimal(fl);
-        bd = bd.setScale(Scale,roundingMode);
-        fl = bd.floatValue()*10;
-        return (int)fl;
-    }
-
-    public Integer FloatString2ToInt(String str){
-        float fl = Float.parseFloat(str);
-        int Scale = 1;
-        int roundingMode = 4;
-        BigDecimal bd = new BigDecimal(fl);
-        bd = bd.setScale(Scale,roundingMode);
-        fl = bd.floatValue()*100;
-        return (int)fl;
-    }
-
-    public ArrayList<Object> data(String[] str) throws ParseException{
-        ArrayList<Object> arrayList = new ArrayList<>();
-        arrayList.add(DataStringToLong(str[0]));
-        int flag0 = 1,flag1 = 2,flag2 = 5,flag3 = 29,flag4 = 33,flag5 = 34,flag6 = 37,flag7 = 50,flag8 = 51,flag9 = 56,
-                flag10 = 57,flag11 = 58,flag12 = 62,flag13 = 68;
-        for(int i = 1; i <= 70; i++){
-            if(i == flag0 || i == flag1 || i == flag2 || i == flag3 || i == flag4
-                    || i == flag5 || i == flag6 || i == flag7 || i == flag8 || i == flag9
-                    || i == flag10 || i == flag11 || i == flag12) {
-                arrayList.add(FloatString1ToInt(str[i]));
-            }else if(i == flag13) {
-                arrayList.add(FloatString2ToInt(str[i]));
-            }else {
-                arrayList.add((int)(Float.parseFloat(str[i])));
-            }
-
-        }
-        return arrayList;
-    }
 
     private byte[] ArrayCombine(byte[] a,byte[] b){
         byte[] bytes = new byte[a.length+b.length];
@@ -152,45 +104,59 @@ public class Compressor {
         return bytes;
     }
 
-    public static void main(String[] args) {
-        Compressor compressor = new Compressor();
-        DataSchema dataSchema = compressor.init();
-        byte[] bytess = new byte[0];
-        try {
-            DataInputStream in = new DataInputStream(new FileInputStream(new File("/home/hadoop/123/16-2016-05-26--2016-05-28.csv-utf8")));
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in,"UTF-8"));
-            String stemp;
-            stemp = bufferedReader.readLine();
-            //System.out.println(stemp);
-            while((stemp = bufferedReader.readLine()) != null){
-                DataTuple dataTuple = dataSchema.parseTuple(stemp,",");
-                byte[] bytes = dataSchema.serializeTuple(dataTuple);
-                bytess = compressor.ArrayCombine(bytes, bytess);
-            }
-            System.out.println(bytess.length);
-//            String str[] = stemp.split(",");
-//            ArrayList<Object> array = compressor.data(str);
-//            for(int i = 0; i <= 70; i++){
-//                dataTuple.add(array.get(i));
-//            }
-//            DataSchema schema = compressor.init();
-
-            /*for (byte i : bytes) {
-                System.out.print(i + ",");
-            }*/
-
-            indexingTopology.compression.Compressor compressor1 = CompressorFactory.compressor(CompressorFactory.Algorithm.Snappy);
-            byte[] compressed = compressor1.compress(bytess);
-            System.out.println(compressed.length);
-            //System.out.println(bytes[1]);
-            /*while((stemp =bufferedReader.readLine()) != null){
-                //System.out.println(stemp);
-                String str[] = stemp.split(",");
-
-
-            }*/
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private BufferedReader getBufferReader() throws FileNotFoundException, UnsupportedEncodingException {
+        DataInputStream in = new DataInputStream(new FileInputStream(new File("/home/hadoop/123/16-2016-05-26--2016-05-28.csv-utf8")));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+        return  bufferedReader;
     }
+
+    private static int len = 0;
+
+    public static void main(String[] args) throws IOException, ParseException {
+        DataCompressor datacompressor = new DataCompressor();
+        DataSchema dataSchema = datacompressor.init();
+        String stemp;
+        int sumByte = 0,sumCom = 0,sumTime = 0;
+        byte[] bytess = new byte[0];
+
+        int count = 0, nums = 6000;
+            try {
+                BufferedReader bufferedReader = datacompressor.getBufferReader();
+
+                stemp = bufferedReader.readLine();
+                System.out.println(stemp);
+                Compressor compressor = CompressorFactory.compressor(CompressorFactory.Algorithm.GZip);
+                //System.out.println(stemp);
+                long start, end;
+                while (true) {
+
+                    while ((stemp = bufferedReader.readLine()) != null) {
+                        if (count++ == nums) break;
+                        DataTuple dataTuple = dataSchema.parseTuple(stemp, ",");
+                        byte[] bytes = dataSchema.serializeTuple(dataTuple);
+                        bytess = datacompressor.ArrayCombine(bytes, bytess);
+                    }
+                    start = System.currentTimeMillis();
+                    byte[] compressed = compressor.compress(bytess);
+                    end = System.currentTimeMillis();
+                    long time = end - start;
+                    System.out.print("[" + bytess.length + ", " + compressed.length + "]" );
+                    sumByte += bytess.length;
+                    sumCom += compressed.length;
+                    sumTime += time;
+                    len++;
+                    System.out.print ( "    ");
+                    if (stemp == null) break;
+                    count = 0;
+                    bytess = new byte[0];
+                }
+
+
+                System.out.println();
+                System.out.println("[" + sumByte/len + ", " + sumCom/len + "]" + ((sumByte/len)/(sumCom/len)) + "/" + sumTime + "/" + sumTime/((sumByte/len)/(sumCom/len)));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
 }

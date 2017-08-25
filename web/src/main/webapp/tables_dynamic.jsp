@@ -27,7 +27,6 @@
     <link href="gentelella-master/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
     <link href="gentelella-master/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
     <link href="gentelella-master/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
-
     <!-- Custom Theme Style -->
     <link href="gentelella-master/build/css/custom.css" rel="stylesheet">
     <script src="js/jquery-1.10.2.min.js"/>
@@ -56,10 +55,36 @@
 //            alert(x + " " + y + " " + time);
 //            return true;
 //        }
+        $(document).ready(function(){
+
+            $(".editableBox").change(function(){
+                $(".timeTextBox").val($(".editableBox option:selected").html());
+            });
+        });
+
     </script>
     <style>
+
+      .dropdown {
+        position: relative;
+        width: 90px;
+      }
+      .dropdown select
+      {
+        width: 100%;
+      }
+      .dropdown > * {
+        box-sizing: border-box;
+        height: 35px;
+      }
+      .dropdown select {
+      }
+      .dropdown input {
+        position: absolute;
+        width: calc(100% - 20px);
+      }
       .text{
-        width:120px;
+        width:90px;
         height:35px;
         padding:5px 9px;
         line-height:24px;
@@ -156,23 +181,61 @@
           <div class="">
             <div class="page-title">
               <div class="title_left">
-                <h3>Users <small>Some examples to get you started</small></h3>
+                <h3>Query Parameters</h3>
               </div>
 
               <div class="input-group">
                 <div>
                   <div>
-                    <input type="text" class="text" value="0" name="xLow" id="xLow" placeholder="xLow">
-                    <input type="text" class="text" value="0" name="xHigh" id="xHigh" placeholder="xHigh">
+                    <small style="float: left; padding: 10px">Latitude :</small>
+                    <div class="dropdown" style="float: left">
+                      <input type="text" class="text" value="0" name="xLow" id="xLow" placeholder="xLow">
+                      <select  onchange="this.previousElementSibling.value=this.value; this.previousElementSibling.focus()">
+                        <option>50</option>
+                        <option>150</option>
+                        <option>250</option>
+                        <option>350</option>
+                      </select>
+                    </div>
+                    <small style="float: left; padding: 10px"> to </small>
+                    <div class="dropdown" style="float: left">
+                      <input type="text" class="text" value="0" name="xHigh" id="xHigh" placeholder="xHigh">
+                      <select  onchange="this.previousElementSibling.value=this.value; this.previousElementSibling.focus()">
+                        <option>250</option>
+                        <option>350</option>
+                        <option>450</option>
+                        <option>550</option>
+                      </select>
+                    </div>
+                    <small style="float: left; padding: 10px">Longtitude :</small>
+                    <div class="dropdown" style="float: left">
+                      <input type="text" class="text" value="0" name="yLow" id="yLow" placeholder="yLow">
+                      <select  onchange="this.previousElementSibling.value=this.value; this.previousElementSibling.focus()">
+                        <option>50</option>
+                        <option>150</option>
+                        <option>250</option>
+                        <option>350</option>
+                      </select>
+                    </div>
+                    <small style="float: left; padding: 10px"> to </small>
+                    <div class="dropdown" style="float: left">
+                      <input type="text" class="text" value="0" name="yHigh" id="yHigh" placeholder="yHigh">
+                      <select  onchange="this.previousElementSibling.value=this.value; this.previousElementSibling.focus()">
+                        <option>250</option>
+                        <option>350</option>
+                        <option>450</option>
+                        <option>550</option>
+                      </select>
+                    </div>
                     <!-- Single button -->
-                      <select class="text" id="time" name="time" style="color: #1f6377">
-                        <option value="0"></option>
+                    <small style="padding: 10px; float: left">Time :</small>
+                      <select class="text" id="time" name="time" style="color: #1f6377; float: left; margin-right: 10px">
                         <option value="5">5s</option>
                         <option value="10">10s</option>
                         <option value="15">15s</option>
                       </select>
                     <span>
-                      <input class="btn btn-info" type="submit" value="Go!" />
+                      <input style="float: left" class="btn btn-info" type="submit" value="Query!" />
                     </span>
                   </div>
                 </div>
@@ -185,7 +248,7 @@
               <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>Default Example <small>Users</small></h2>
+                    <h2>Query Rusult</h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -205,7 +268,7 @@
                   </div>
                   <div class="x_content">
                     <p class="text-muted font-13 m-b-30">
-                      DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction function: <code>$().DataTable();</code>
+                      Query Response Time :  <code>${queryTime }ms</code>
                     </p>
                     <table id="datatable" class="table table-striped table-bordered">
                       <thead>

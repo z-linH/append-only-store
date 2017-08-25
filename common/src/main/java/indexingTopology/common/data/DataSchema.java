@@ -2,12 +2,13 @@ package indexingTopology.common.data;
 
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.sun.javafx.image.IntPixelGetter;
 
+import javax.xml.crypto.Data;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by parijatmazumdar on 17/09/15.
@@ -18,6 +19,24 @@ public class DataSchema implements Serializable {
         DataType(Class type, int length) {
             this.type = type;
             this.length = length;
+        }
+
+        Object readFromString(String string) {
+            if (type.equals(Integer.class)) {
+                return Integer.parseInt(string);
+            }else if(type.equals(Double.class)) {
+                return Double.parseDouble(string);
+            }else if(type.equals(Long.class)) {
+                return Long.parseLong(string);
+            }else if(type.equals(Float.class)) {
+                return Float.parseFloat(string);
+            }else if(type.equals(Byte.class)) {
+                return Byte.parseByte(string);
+            }else if(type.equals(Short.class)) {
+                return Short.parseShort(string);
+            }
+            return null;
+
         }
         public Class type;
         public int length;
@@ -60,8 +79,29 @@ public class DataSchema implements Serializable {
         dataTypes.add(dataType);
     }
 
+    public void addFloatField(String name) {
+        final DataType dataType = new DataType(Float.class, Float.BYTES);
+        dataFieldNameToIndex.put(name, fieldNames.size());
+        fieldNames.add(name);
+        dataTypes.add(dataType);
+    }
+
+    public void addByteField(String name) {
+        final DataType dataType = new DataType(Byte.class, Byte.BYTES);
+        dataFieldNameToIndex.put(name, fieldNames.size());
+        fieldNames.add(name);
+        dataTypes.add(dataType);
+    }
+
     public void addIntField(String name) {
         final DataType dataType = new DataType(Integer.class, Integer.BYTES);
+        dataFieldNameToIndex.put(name, fieldNames.size());
+        fieldNames.add(name);
+        dataTypes.add(dataType);
+    }
+
+    public void addShortField(String name) {
+        final DataType dataType = new DataType(Short.class, Short.BYTES);
         dataFieldNameToIndex.put(name, fieldNames.size());
         fieldNames.add(name);
         dataTypes.add(dataType);
@@ -101,6 +141,12 @@ public class DataSchema implements Serializable {
                 output.writeInt((int)t.get(i));
             } else if (dataTypes.get(i).type.equals(Long.class)) {
                 output.writeLong((long)t.get(i));
+            } else if (dataTypes.get(i).type.equals(Float.class)) {
+                output.writeFloat((float)t.get(i));
+            } else if (dataTypes.get(i).type.equals(Byte.class)) {
+                output.writeByte((byte)t.get(i));
+            } else if (dataTypes.get(i).type.equals(Short.class)) {
+                output.writeByte((short)t.get(i));
             } else {
                 throw new RuntimeException("Not supported data type!" );
             }
@@ -127,6 +173,8 @@ public class DataSchema implements Serializable {
                 dataTuple.add(input.readInt());
             } else if (dataTypes.get(i).type.equals(Long.class)) {
                 dataTuple.add(input.readLong());
+            } else if (dataTypes.get(i).type.equals(Short.class)) {
+                dataTuple.add(input.readShort());
             } else {
                 throw new RuntimeException("Only classes supported till now are string and double");
             }
@@ -221,5 +269,29 @@ public class DataSchema implements Serializable {
             return false;
 
         return true;
+    }
+
+    public DataTuple parseTuple(String tuple, String split) throws ParseException {
+        String[] attributes = tuple.split(split);
+        DataTuple dataTuple = new DataTuple();
+        Object attribute;
+        for (int i = 0; i < attributes.length; i++) {
+            if(i == 0){
+                Long lg = readLongfromString(attributes[0]);
+                attribute = dataTypes.get(i).readFromString(String.valueOf(lg));
+            }else{
+                attribute = dataTypes.get(i).readFromString(attributes[i]);
+            }
+            dataTuple.add(attribute);
+        }
+        return dataTuple;
+    }
+
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+    public Long readLongfromString(String str) throws ParseException {
+        Date data = sdf.parse(str);
+        Long l = data.getTime();
+        return l;
     }
 }
