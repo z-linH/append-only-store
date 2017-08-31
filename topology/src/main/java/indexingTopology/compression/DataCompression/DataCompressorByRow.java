@@ -6,21 +6,17 @@ import indexingTopology.compression.Compressor;
 import indexingTopology.compression.CompressorFactory;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 
-public class DataCompressor {
+public class DataCompressorByRow {
     public DataSchema init(){
         DataSchema schema = new DataSchema();
         schema.addFloatField("data_time");
-        schema.addFloatField("DJClnV");
-        schema.addFloatField("DJClnA");
-        schema.addFloatField("FDJClnA");
-        schema.addFloatField("DJSpeed");
+        schema.addShortField("DJClnV");
+        schema.addShortField("DJClnA");
+        schema.addShortField("FDJClnA");
+        schema.addShortField("DJSpeed");
         schema.addByteField("DJTemp");
         schema.addByteField("DJCTemp");
         schema.addByteField("FDJTemp");
@@ -45,15 +41,15 @@ public class DataCompressor {
         schema.addByteField("FDJworkmode");
         schema.addByteField("VCU");
         schema.addShortField("sys_status");
-        schema.addFloatField("engine_speed");
+        schema.addShortField("engine_speed");
         schema.addByteField("engine_wtemp");
         schema.addByteField("engine_load");
-        schema.addFloatField("NSGYW");
-        schema.addFloatField("engine_target_throttle");
-        schema.addFloatField("engine_real_throttle");
+        schema.addShortField("NSGYW");
+        schema.addShortField("engine_target_throttle");
+        schema.addShortField("engine_real_throttle");
         schema.addShortField("VCLIFE");
-        schema.addFloatField("tow_pedal");
-        schema.addFloatField("brake_pedal");
+        schema.addShortField("tow_pedal");
+        schema.addShortField("brake_pedal");
         schema.addShortField("engine_oil_pressure");
         schema.addByteField("engine_air_temp");
         schema.addFloatField("engine_oil_gas");
@@ -68,26 +64,26 @@ public class DataCompressor {
         schema.addByteField("a5");
         schema.addShortField("a6");
         schema.addShortField("a7");
-        schema.addFloatField("a8");
+        schema.addShortField("a8");
         schema.addFloatField("version");
-        schema.addFloatField("instant_gas");
+        schema.addShortField("instant_gas");
         schema.addShortField("bi_DCDC_error");
         schema.addShortField("DCDC_error");
         schema.addShortField("lubro_pump_power_DCAC_error");
         schema.addShortField("air_pump_power_DCAC_error");
-        schema.addFloatField("battery_total_V");
-        schema.addFloatField("charge_discharge_A");
-        schema.addFloatField("soc");
+        schema.addShortField("battery_total_V");
+        schema.addShortField("charge_discharge_A");
+        schema.addShortField("soc");
         schema.addByteField("statusFlag1");
         schema.addByteField("statusFlag2");
         schema.addByteField("statusFlag3");
-        schema.addFloatField("battery_max_mono_V");
+        schema.addByteField("battery_max_mono_V");
         schema.addByteField("battery_max_mono_V_no");
         schema.addByteField("battery_max_mono_V_pos");
         schema.addByteField("battery_max_temp");
         schema.addByteField("battery_max_temp_no");
         schema.addByteField("battery_max_temp_pos");
-        schema.addFloatField("battery_min_mono_V");
+        schema.addShortField("battery_min_mono_V");
         schema.addByteField("battery_min_mono_V_no");
         schema.addByteField("battery_min_mono_V_pos");
         return schema;
@@ -113,19 +109,19 @@ public class DataCompressor {
     private static int len = 0;
 
     public static void main(String[] args) throws IOException, ParseException {
-        DataCompressor datacompressor = new DataCompressor();
+        DataCompressorByRow datacompressor = new DataCompressorByRow();
         DataSchema dataSchema = datacompressor.init();
         String stemp;
         int sumByte = 0,sumCom = 0,sumTime = 0;
         byte[] bytess = new byte[0];
 
-        int count = 0, nums = 6000;
+        int count = 0, nums = 3000;
             try {
                 BufferedReader bufferedReader = datacompressor.getBufferReader();
 
                 stemp = bufferedReader.readLine();
                 System.out.println(stemp);
-                Compressor compressor = CompressorFactory.compressor(CompressorFactory.Algorithm.GZip);
+                Compressor compressor = CompressorFactory.compressor(CompressorFactory.Algorithm.BZip2);
                 //System.out.println(stemp);
                 long start, end;
                 while (true) {
@@ -133,7 +129,7 @@ public class DataCompressor {
                     while ((stemp = bufferedReader.readLine()) != null) {
                         if (count++ == nums) break;
                         DataTuple dataTuple = dataSchema.parseTuple(stemp, ",");
-                        byte[] bytes = dataSchema.serializeTuple(dataTuple);
+                        byte[] bytes = dataSchema.dataComSerializeTuple(dataTuple);
                         bytess = datacompressor.ArrayCombine(bytes, bytess);
                     }
                     start = System.currentTimeMillis();

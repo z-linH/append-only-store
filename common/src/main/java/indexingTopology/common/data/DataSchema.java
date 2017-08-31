@@ -2,10 +2,9 @@ package indexingTopology.common.data;
 
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.sun.javafx.image.IntPixelGetter;
 
-import javax.xml.crypto.Data;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -20,6 +19,8 @@ public class DataSchema implements Serializable {
             this.type = type;
             this.length = length;
         }
+
+
 
         Object readFromString(String string) {
             if (type.equals(Integer.class)) {
@@ -41,6 +42,27 @@ public class DataSchema implements Serializable {
         public Class type;
         public int length;
     }
+
+    Object readFromStringByColumn(String string, Class type) {
+        if (type.equals(Integer.class)) {
+            return Integer.parseInt(string);
+        }else if(type.equals(Double.class)) {
+            return Double.parseDouble(string);
+        }else if(type.equals(Long.class)) {
+            return Long.parseLong(string);
+        }else if(type.equals(Float.class)) {
+            return Float.parseFloat(string);
+        }else if(type.equals(Byte.class)) {
+            return Byte.parseByte(string);
+        }else if(type.equals(Short.class)) {
+            return Short.parseShort(string);
+        }
+        return null;
+
+    }
+
+
+
 
     public DataSchema(){};
 
@@ -151,6 +173,72 @@ public class DataSchema implements Serializable {
                 throw new RuntimeException("Not supported data type!" );
             }
         }
+        byte[] bytes = output.toBytes();
+        output.close();
+        return bytes;
+    }
+
+    public byte[] dataColumnSerializeTupe(DataTuple t, Class type) {
+        Output output = new Output(1000, 2000000);
+        for (int i = 0; i < t.size(); i++) {
+            if (type.equals(Double.class)) {
+                output.writeDouble((double)t.get(i));
+            } else if (type.equals(String.class)) {
+//                output.writeString((String)t.get(i));
+                byte[] bytes = ((String) t.get(i)).getBytes();
+                output.writeInt(bytes.length);
+                output.write(bytes);
+            } else if (type.equals(Integer.class)) {
+                output.writeInt((int)t.get(i));
+            } else if (type.equals(Long.class)) {
+                output.writeLong((long)t.get(i));
+            } else if (type.equals(Float.class)) {
+                output.writeFloat((float)t.get(i));
+            } else if (type.equals(Byte.class)) {
+                output.writeByte((byte)t.get(i));
+            } else if (type.equals(Short.class)) {
+                output.writeByte((short)t.get(i));
+            } else {
+                throw new RuntimeException("Not supported data type!" );
+            }
+        }
+        byte[] bytes = output.toBytes();
+        output.close();
+        return bytes;
+
+    }
+
+    public byte[] dataComSerializeTuple(DataTuple t) {
+        Output output = new Output(1000, 2000000);
+        int j = 0;
+        for (int i = 0; i < dataTypes.size(); i++) {
+            //System.out.println(fieldNames.get(i));
+            if(IsBooleanOrNot.judg(fieldNames.get(i)))
+                continue;
+
+            if (dataTypes.get(i).type.equals(Double.class)) {
+                output.writeDouble((double)t.get(j));
+            } else if (dataTypes.get(i).type.equals(String.class)) {
+//                output.writeString((String)t.get(j));
+                byte[] bytes = ((String) t.get(j)).getBytes();
+                output.writeInt(bytes.length);
+                output.write(bytes);
+            } else if (dataTypes.get(i).type.equals(Integer.class)) {
+                output.writeInt((int)t.get(j));
+            } else if (dataTypes.get(i).type.equals(Long.class)) {
+                output.writeLong((long)t.get(j));
+            } else if (dataTypes.get(i).type.equals(Float.class)) {
+                output.writeFloat((float)t.get(j));
+            } else if (dataTypes.get(i).type.equals(Byte.class)) {
+                output.writeByte((byte)t.get(j));
+            } else if (dataTypes.get(i).type.equals(Short.class)) {
+                output.writeByte((short)t.get(j));
+            } else {
+                throw new RuntimeException("Not supported data type!" );
+            }
+            j++;
+        }
+        output.writeShort((short)t.get(j));
         byte[] bytes = output.toBytes();
         output.close();
         return bytes;
@@ -271,19 +359,52 @@ public class DataSchema implements Serializable {
         return true;
     }
 
+    public DataTuple parseTupleColumn(String tuple, String split, Class type) throws ParseException {
+        String[] attributes = tuple.split(split);
+        DataTuple dataTuple = new DataTuple();
+        StringBuffer stringBuffer = new StringBuffer();
+        Object attribute = null;
+        for (int i = 0; i < attributes.length; i++) {
+            if(type.equals(Long.class)) {
+                Long lg = readLongfromString(attributes[i]);
+                attribute = readFromStringByColumn(String.valueOf(lg), type);
+            } else if(type.equals(Float.class)) {
+                attribute = readFromStringByColumn(attributes[i], type);
+            }
+            dataTuple.add(attribute);
+        }
+        return dataTuple;
+    }
+
     public DataTuple parseTuple(String tuple, String split) throws ParseException {
         String[] attributes = tuple.split(split);
         DataTuple dataTuple = new DataTuple();
+        StringBuffer stringBuffer = new StringBuffer();
         Object attribute;
         for (int i = 0; i < attributes.length; i++) {
             if(i == 0){
                 Long lg = readLongfromString(attributes[0]);
                 attribute = dataTypes.get(i).readFromString(String.valueOf(lg));
             }else{
-                attribute = dataTypes.get(i).readFromString(attributes[i]);
+                if(IsBooleanOrNot.judg(fieldNames.get(i))) {
+                    stringBuffer.append(attributes[i]);
+                    continue;
+                } else if(IsFloatOrNot.judgFloatWithOne(fieldNames.get(i))) {
+                    attribute = saveFloatWithOneAsShort(attributes[i]);
+                } else if(IsFloatOrNot.judgFloatWithTwo(fieldNames.get(i))) {
+                    attribute = saveFloatWithTwoAsShort(attributes[i]);
+                } else if(IsFloatOrNot.judgFloatWithOneUnderByte(fieldNames.get(i))) {
+                    attribute = saveFloatWithOneUnderByteAsShort(attributes[i]);
+                } else {
+                    attribute = dataTypes.get(i).readFromString(attributes[i]);
+                }
             }
+
             dataTuple.add(attribute);
         }
+        attribute = saveBooleanAsShort(stringBuffer);
+        dataTuple.add(attribute);
+        //System.out.println(dataTuple);
         return dataTuple;
     }
 
@@ -293,5 +414,44 @@ public class DataSchema implements Serializable {
         Date data = sdf.parse(str);
         Long l = data.getTime();
         return l;
+    }
+
+    static short saveBooleanAsShort(StringBuffer stringBuffer) {
+        StringBuffer strBuffer = new StringBuffer();
+        for(int i = 14; i >= 0; i--){
+            strBuffer.append(stringBuffer.charAt(i));
+
+        }
+        return Short.valueOf(strBuffer.toString(),2);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(saveFloatWithOneUnderByteAsShort("3.1"));
+    }
+    static short saveFloatWithOneAsShort(String string){
+        Float fl = Float.parseFloat(string);
+        int Scale = 1;
+        int roundingMode = 4;
+        BigDecimal bd = new BigDecimal(fl);
+        bd = bd.setScale(Scale,roundingMode);
+        return (short)(bd.floatValue()*10);
+    }
+
+    static short saveFloatWithTwoAsShort(String string){
+        Float fl = Float.parseFloat(string);
+        int Scale = 2;
+        int roundingMode = 4;
+        BigDecimal bd = new BigDecimal(fl);
+        bd = bd.setScale(Scale,roundingMode);
+        return (short)(bd.floatValue()*100);
+    }
+
+    static byte saveFloatWithOneUnderByteAsShort(String string){
+        Float fl = Float.parseFloat(string);
+        int Scale = 1;
+        int roundingMode = 4;
+        BigDecimal bd = new BigDecimal(fl);
+        bd = bd.setScale(Scale,roundingMode);
+        return (byte)(bd.floatValue()*10);
     }
 }
