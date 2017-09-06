@@ -370,6 +370,12 @@ public class DataSchema implements Serializable {
                 attribute = readFromStringByColumn(String.valueOf(lg), type);
             } else if(type.equals(Float.class)) {
                 attribute = readFromStringByColumn(attributes[i], type);
+            }else if(type.equals(Double.class)) {
+                attribute = readFromStringByColumn(attributes[i], type);
+            }else if(type.equals(Byte.class)) {
+                attribute = readFromStringByColumn(attributes[i], type);
+            }else if(type.equals(Short.class)) {
+                attribute = readFromStringByColumn(attributes[i], type);
             }
             dataTuple.add(attribute);
         }

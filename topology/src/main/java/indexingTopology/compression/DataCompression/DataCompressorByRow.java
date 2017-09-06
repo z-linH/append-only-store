@@ -115,13 +115,13 @@ public class DataCompressorByRow {
         int sumByte = 0,sumCom = 0,sumTime = 0;
         byte[] bytess = new byte[0];
 
-        int count = 0, nums = 3000;
+        int count = 0, nums = 1;
             try {
                 BufferedReader bufferedReader = datacompressor.getBufferReader();
 
                 stemp = bufferedReader.readLine();
                 System.out.println(stemp);
-                Compressor compressor = CompressorFactory.compressor(CompressorFactory.Algorithm.BZip2);
+                Compressor compressor = CompressorFactory.compressor(CompressorFactory.Algorithm.GZip);
                 //System.out.println(stemp);
                 long start, end;
                 while (true) {
