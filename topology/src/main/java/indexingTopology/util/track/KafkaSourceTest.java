@@ -31,9 +31,9 @@ public class KafkaSourceTest {
         Matcher m = p.matcher("[\"10.21.25.203:9092\",\"10.21.25.204:9092\",\"10.21.25.205:9092\"]");
         String currentKafkahost = m.replaceAll("").trim();
 //        IngestionKafkaBatchMode kafkaBatchMode = new IngestionKafkaBatchMode("10.21.25.203:9092,10.21.25.203:9092,10.21.25.203:9092", "gpis");
-        IngestionKafkaBatchMode kafkaBatchMode = new IngestionKafkaBatchMode("68.28.7.80:9092", "gpis");
+        IngestionKafkaBatchMode kafkaBatchMode = new IngestionKafkaBatchMode("localhost:9092", "gpis");
         kafkaBatchMode.ingestProducer();
-        int total = 10;
+        int total = 10000;
         Thread emittingThread = null;
         emittingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -52,8 +52,8 @@ public class KafkaSourceTest {
                         String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
 //                            System.out.println(devbtype);
 //                            String Msg = "{\"lon\":"+ car.x + ",\"lat\":" + car.y + ",\"devbtype\":"+ devbtype +",\"devid\":\"asd\",\"city\":\"4401\",\"locationtime\":" + System.currentTimeMillis() +  "}";
-                        if (i  < total/2) {
-//                        if(i < 0){
+//                        if (i  < total/2) {
+                        if(i < 0){
                             String Msg = jsonTest.CheckJingyiJson(1);
 //                            String Msg = "{\"asd\":\"\",\"reserve1\":\"1\",\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
 //                                    "\"ssdwmc\":\"字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数\",\"teamno\":\"44010001\",}";

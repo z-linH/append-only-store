@@ -27,7 +27,8 @@ import java.util.regex.Pattern;
  **/
 public class PosSpacialSearchWs {
 
-    private String QueryServerIp = "68.28.8.91";
+    //    private String QueryServerIp = "68.28.8.91";
+    private String QueryServerIp = "localhost";
     private Point leftTop, rightBottom;
     private Point[] geoStr;
     private Point circle;
@@ -118,19 +119,19 @@ public class PosSpacialSearchWs {
                     e.printStackTrace();
                 }
                 GeoTemporalQueryRequest queryRequest = new GeoTemporalQueryRequest<>(xLow, xHigh, yLow, yHigh,
-                        System.currentTimeMillis() - 10 * 1000,
+                        System.currentTimeMillis() - 30 * 1000,
                         System.currentTimeMillis(), predicate, null,null, null, null);
                 System.out.println("xLow:" + xLow + " " + xHigh + " " +yLow + " " + yHigh);
                 try {
                     QueryResponse response = queryClient.query(queryRequest);
                     List<DataTuple> tuples = response.getTuples();
-                    System.out.println(tuples.size());
                     queryResult = new JSONArray();
                     for (DataTuple tuple : tuples){
                         JSONObject jsonFromTuple = schema.getJsonFromDataTupleWithoutZcode(tuple);
                         queryResult.add(jsonFromTuple);
                         System.out.println(jsonFromTuple);
                     }
+                    System.out.println("datatuples : " + response.dataTuples.size());
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (ClassNotFoundException e) {

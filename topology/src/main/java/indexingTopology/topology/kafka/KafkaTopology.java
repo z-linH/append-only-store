@@ -6,9 +6,6 @@ import indexingTopology.api.client.GeoTemporalQueryRequest;
 import indexingTopology.api.client.IngestionKafkaBatchMode;
 import indexingTopology.api.client.QueryResponse;
 import indexingTopology.bolt.*;
-import indexingTopology.common.aggregator.AggregateField;
-import indexingTopology.common.aggregator.Aggregator;
-import indexingTopology.common.aggregator.Count;
 import indexingTopology.common.data.DataSchema;
 import indexingTopology.common.data.DataTuple;
 import indexingTopology.common.logics.DataTupleEquivalentPredicateHint;
@@ -24,10 +21,6 @@ import indexingTopology.util.taxi.Car;
 import indexingTopology.util.taxi.City;
 import indexingTopology.util.taxi.TrajectoryGenerator;
 import indexingTopology.util.taxi.TrajectoryMovingGenerator;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.StormSubmitter;
@@ -43,7 +36,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.SocketTimeoutException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
@@ -97,10 +89,14 @@ public class KafkaTopology {
 
 
 
-    static final double x1 = 80.012928;
-    static final double x2 = 90.023983;
-    static final double y1 = 70.292677;
-    static final double y2 = 80.614865;
+//    static final double x1 = 80.012928;
+//    static final double x2 = 90.023983;
+//    static final double y1 = 70.292677;
+//    static final double y2 = 80.614865;
+    static final double x1 = 110.92;
+    static final double x2 = 113.77;
+    static final double y1 = 21.64;
+    static final double y2 = 23.49;
     static final int partitions = 128;
     int totalNumber = 0;
     AvailableSocketPool socketPool = new AvailableSocketPool();

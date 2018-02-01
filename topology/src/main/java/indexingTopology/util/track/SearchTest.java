@@ -37,7 +37,7 @@ public class SearchTest {
                     break;
                 }
                 case "4" : {
-                    String searcRectangle = "{\"type\":\"rectangle\",\"leftTop\":\"10,1000\",\"rightBottom\":\"1000,10\",\"geoStr\":null,\"longitude\":null,\"latitude\":null,\"radius\":null}";
+                    String searcRectangle = "{\"type\":\"rectangle\",\"leftTop\":\"110,25\",\"rightBottom\":\"115,20\",\"geoStr\":null,\"longitude\":null,\"latitude\":null,\"radius\":null}";
                     PosSpacialSearchWs posSpacialSearchWs = new PosSpacialSearchWs();
                     String result = posSpacialSearchWs.service(null, searcRectangle);
                     System.out.println(result);
