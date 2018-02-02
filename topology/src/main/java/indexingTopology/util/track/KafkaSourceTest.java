@@ -2,10 +2,12 @@ package indexingTopology.util.track;
 
 import indexingTopology.api.client.IngestionKafkaBatchMode;
 import indexingTopology.config.TopologyConfig;
+import indexingTopology.util.FrequencyRestrictor;
 import indexingTopology.util.Json.JsonTest;
 import indexingTopology.util.taxi.Car;
 import indexingTopology.util.taxi.TrajectoryGenerator;
 import indexingTopology.util.taxi.TrajectoryMovingGenerator;
+import org.apache.storm.metric.internal.RateTracker;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,10 +19,10 @@ import java.util.regex.Pattern;
  * Created by billlin on 2017/12/30
  */
 public class KafkaSourceTest {
-    static final double x1 = 80.012928;
-    static final double x2 = 90.023983;
-    static final double y1 = 70.292677;
-    static final double y2 = 80.614865;
+    static final double x1 = 111.012928;
+    static final double x2 = 115.023983;
+    static final double y1 = 21.292677;
+    static final double y2 = 25.614865;
 
     public void sourceProducer(){
         long start = System.currentTimeMillis();
@@ -33,12 +35,16 @@ public class KafkaSourceTest {
 //        IngestionKafkaBatchMode kafkaBatchMode = new IngestionKafkaBatchMode("10.21.25.203:9092,10.21.25.203:9092,10.21.25.203:9092", "gpis");
         IngestionKafkaBatchMode kafkaBatchMode = new IngestionKafkaBatchMode("localhost:9092", "gpis");
         kafkaBatchMode.ingestProducer();
-        int total = 10000;
+        int total = 10;
+        FrequencyRestrictor restrictor = new FrequencyRestrictor(1000, 5);
+        RateTracker rateTracker = new RateTracker(1000, 5);
         Thread emittingThread = null;
         emittingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     for (int i = 0; i < total; i++) {
+                        restrictor.getPermission();
+                        rateTracker.notify(1);
                         Car car = generator.generate();
                         Double lon = Math.random() * 100;
                         Double lat = Math.random() * 100;
@@ -59,7 +65,7 @@ public class KafkaSourceTest {
 //                                    "\"ssdwmc\":\"字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数\",\"teamno\":\"44010001\",}";
                             kafkaBatchMode.send(i, Msg);
                         } else {
-                            String Msg = "{\"devbtype\":" + 11 + ",\"devstype\":" + 123 + ",\"devid\":\"75736331\",\"city\":\"4406\",\"longitude\":" + 112.123123 + ",\"latitude\":" + 22.874917
+                            String Msg = "{\"devbtype\":" + 11 + ",\"devstype\":" + 123 + ",\"devid\":\"75736331\",\"city\":\"4406\",\"longitude\":" + 113.123123 + ",\"latitude\":" + 23.874917
                                     + ",\"altitude\":\"0\"," +
                                     "\"speed\":\"0\",\"direction\":\"0\",\"locationtime\":\"" + currentTime + "\",\"workstate\":\"1\",\"clzl\":\"\",\"hphm\":\"\",\"jzlx\":\"7\",\"jybh\":\"100011\"," +
                                     "\"jymc\":\"陈国基陈国基陈国基陈国基陈国基陈国基陈国基陈国基陈国基陈国基\",\"lxdh\":\"13576123212\",\"dth\":\"\",\"reserve1\":\"1\",\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
@@ -69,7 +75,7 @@ public class KafkaSourceTest {
 //                                    "\"jymc\":\"陈国基\",\"lxdh\":\"13576123212\",\"dth\":\"SG0000000352\",\"reserve1\":null,\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
 //                                    "\"ssdwmc\":\"广州市\",\"teamno\":\"44010001\"}";
 //                            String   Msg = "{\"devbtype\":" + 10 + ",\"devstype\":\"123\"}";
-                            System.out.println(currentTime);
+//                            System.out.println(currentTime);
                             kafkaBatchMode.send(i, Msg);
                         }
                         //                        this.producer.send(new ProducerRecord<String, String>("consumer",
@@ -86,14 +92,26 @@ public class KafkaSourceTest {
                     }
                     kafkaBatchMode.flush();
                     //            producer.close();
-                    System.out.println("Kafka Producer send msg over,cost time:" + (System.currentTimeMillis() - start) + "ms");
-                    Thread.sleep(500000);
+//                    System.out.println("Kafka Producer send msg over,cost time:" + (System.currentTimeMillis() - start) + "ms");
+//                    Thread.sleep(500000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
         emittingThread.start();
+
+        new Thread(() -> {
+            while(true) {
+                try {
+                    Thread.sleep(1000);
+                    System.out.println(String.format("%.1f tuples / s.", rateTracker.reportRate()));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+        }).start();
     }
 
     public static void main(String[] args) {

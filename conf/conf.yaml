@@ -2,6 +2,8 @@
 # the path where the data chunks will be stored
  storage.datachunk.folder: "data"
 
+
+
 # the path where the metadata will be stored
  metadata.local.storage.path: "metadata"
 # default file system for storage: hdfs/local.
