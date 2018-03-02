@@ -119,7 +119,7 @@ public class PosSpacialSearchWs {
                     e.printStackTrace();
                 }
                 GeoTemporalQueryRequest queryRequest = new GeoTemporalQueryRequest<>(xLow, xHigh, yLow, yHigh,
-                        System.currentTimeMillis() - 30 * 1000,
+                        System.currentTimeMillis() - 3000 * 1000,
                         System.currentTimeMillis(), predicate, null,null, null, null);
                 System.out.println("xLow:" + xLow + " " + xHigh + " " +yLow + " " + yHigh);
                 try {

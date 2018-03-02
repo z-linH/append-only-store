@@ -33,9 +33,9 @@ public class KafkaSourceTest {
         Matcher m = p.matcher("[\"10.21.25.203:9092\",\"10.21.25.204:9092\",\"10.21.25.205:9092\"]");
         String currentKafkahost = m.replaceAll("").trim();
 //        IngestionKafkaBatchMode kafkaBatchMode = new IngestionKafkaBatchMode("10.21.25.203:9092,10.21.25.203:9092,10.21.25.203:9092", "gpis");
-        IngestionKafkaBatchMode kafkaBatchMode = new IngestionKafkaBatchMode("localhost:9092", "gpis");
+        IngestionKafkaBatchMode kafkaBatchMode = new IngestionKafkaBatchMode("localhost:9092", "1514");
         kafkaBatchMode.ingestProducer();
-        int total = 10;
+        int total = 1000;
         FrequencyRestrictor restrictor = new FrequencyRestrictor(1000, 5);
         RateTracker rateTracker = new RateTracker(1000, 5);
         Thread emittingThread = null;
@@ -43,12 +43,14 @@ public class KafkaSourceTest {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     for (int i = 0; i < total; i++) {
-                        restrictor.getPermission();
-                        rateTracker.notify(1);
+//                        restrictor.getPermission();
+//                        rateTracker.notify(1);
                         Car car = generator.generate();
                         Double lon = Math.random() * 100;
                         Double lat = Math.random() * 100;
-                        int devbtype = (int) (Math.random() * 100);
+                        int devbtype = (int) (Math.random() * 10);
+                        int devid = (int) (Math.random() * 10);
+                        int city = (int) (Math.random() * 10);
                         final int id = new Random().nextInt(100);
                         final String idString = "" + id;
                         Date dateOld = new Date(System.currentTimeMillis()); // 根据long类型的毫秒数生命一个date类型的时间
@@ -59,25 +61,32 @@ public class KafkaSourceTest {
 //                            System.out.println(devbtype);
 //                            String Msg = "{\"lon\":"+ car.x + ",\"lat\":" + car.y + ",\"devbtype\":"+ devbtype +",\"devid\":\"asd\",\"city\":\"4401\",\"locationtime\":" + System.currentTimeMillis() +  "}";
 //                        if (i  < total/2) {
-                        if(i < 0){
-                            String Msg = jsonTest.CheckJingyiJson(1);
-//                            String Msg = "{\"asd\":\"\",\"reserve1\":\"1\",\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
-//                                    "\"ssdwmc\":\"字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数\",\"teamno\":\"44010001\",}";
-                            kafkaBatchMode.send(i, Msg);
-                        } else {
-                            String Msg = "{\"devbtype\":" + 11 + ",\"devstype\":" + 123 + ",\"devid\":\"75736331\",\"city\":\"4406\",\"longitude\":" + 113.123123 + ",\"latitude\":" + 23.874917
-                                    + ",\"altitude\":\"0\"," +
+//                        if(i < 0){
+//                            String Msg = jsonTest.CheckJingyiJson(1);
+////                            String Msg = "{\"asd\":\"\",\"reserve1\":\"1\",\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
+////                                    "\"ssdwmc\":\"字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数\",\"teamno\":\"44010001\",}";
+//                            kafkaBatchMode.send(i, Msg);
+//                        } else {
+                            String Msg = "{\"devbtype\":" + devbtype + ",\"devstype\":" + 123 + ",\"devid\":\"" + devid + "\",\"city\":\"" + city + "\",\"longitude\":" + car.x + ",\"latitude\":" + car.y
+                                    + ",\"altitude\":2000.0," +
                                     "\"speed\":\"0\",\"direction\":\"0\",\"locationtime\":\"" + currentTime + "\",\"workstate\":\"1\",\"clzl\":\"\",\"hphm\":\"\",\"jzlx\":\"7\",\"jybh\":\"100011\"," +
-                                    "\"jymc\":\"陈国基陈国基陈国基陈国基陈国基陈国基陈国基陈国基陈国基陈国基\",\"lxdh\":\"13576123212\",\"dth\":\"\",\"reserve1\":\"1\",\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
+                                    "\"jymc\":\"陈国基\",\"lxdh\":\"13576123212\",\"dth\":\"\",\"reserve1\":\"1\",\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
                                     "\"ssdwmc\":\"a\",\"teamno\":\"44010001\"}";
-//                            String Msg = "{\"devbtype\":" + 10 + ",\"devstyaasdpe\":\"123\",\"devid\":\"0x0101\",\"city\":\"4401\",\"longitude\":"+ 80.8888888888 + ",\"latitude\":" + 80.8888888888 + ",\"altitude\":2000.0," +
+
+//                            String Msg = "{\"devbtype\":" + devbtype + ",\"devstype\":" + 123 + ",\"devid\":\"" + devid + "\",\"city\":\"" + city + "\",\"longitude\":" + 113.123123 + ",\"latitude\":" + car.x
+//                                    + ",\"altitude\":" + car.y + "," +
+//                                    "\"speed\":\"0\",\"direction\":\"0\",\"locationtime\":\"" + currentTime + "\",\"workstate\":\"1\",\"clzl\":\"\",\"hphm\":\"\",\"jzlx\":\"7\",\"jybh\":\"100011\"," +
+//                                    "\"jymc\":\"陈国基\",\"lxdh\":\"13576123212\",\"dth\":\"\",\"reserve1\":\"1\",\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
+//                                    "\"ssdwmc\":\"a\",\"teamno\":\"44010001\"}";
+
+                            //                            String Msg = "{\"devbtype\":" + 10 + ",\"devstyaasdpe\":\"123\",\"devid\":\"0x0101\",\"city\":\"4401\",\"longitude\":"+ 80.8888888888 + ",\"latitude\":" + 80.8888888888 + ",\"altitude\":2000.0," +
 //                                    "\"speed\":50.0,\"direction\":40.0,\"locationtime\":\""+ currentTime +"\",\"workstate\":1,\"clzl\":\"巡逻车\",\"hphm\":\"粤A39824\",\"jzlx\":1,\"jybh\":\"100011\"," +
 //                                    "\"jymc\":\"陈国基\",\"lxdh\":\"13576123212\",\"dth\":\"SG0000000352\",\"reserve1\":null,\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
 //                                    "\"ssdwmc\":\"广州市\",\"teamno\":\"44010001\"}";
 //                            String   Msg = "{\"devbtype\":" + 10 + ",\"devstype\":\"123\"}";
 //                            System.out.println(currentTime);
                             kafkaBatchMode.send(i, Msg);
-                        }
+//                        }
                         //                        this.producer.send(new ProducerRecord<String, String>("consumer",
                         //                                String.valueOf(i), "{\"employees\":[{\"firstName\":\"John\",\"lastName\":\"Doe\"},{\"firstName\":\"Anna\",\"lastName\":\"Smith\"},{\"firstName\":\"Peter\",\"lastName\":\"Jones\"}]}"));
                         //                        String.format("{\"type\":\"test\", \"t\":%d, \"k\":%d}", System.currentTimeMillis(), i)));
@@ -92,8 +101,8 @@ public class KafkaSourceTest {
                     }
                     kafkaBatchMode.flush();
                     //            producer.close();
-//                    System.out.println("Kafka Producer send msg over,cost time:" + (System.currentTimeMillis() - start) + "ms");
-//                    Thread.sleep(500000);
+                    System.out.println("Kafka Producer send msg over,cost time:" + (System.currentTimeMillis() - start) + "ms");
+                    Thread.sleep(Long.MAX_VALUE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -101,17 +110,17 @@ public class KafkaSourceTest {
         });
         emittingThread.start();
 
-        new Thread(() -> {
-            while(true) {
-                try {
-                    Thread.sleep(1000);
-                    System.out.println(String.format("%.1f tuples / s.", rateTracker.reportRate()));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    break;
-                }
-            }
-        }).start();
+//        new Thread(() -> {
+//            while(true) {
+//                try {
+//                    Thread.sleep(100000);
+//                    System.out.println(String.format("%.1f tuples / s.", rateTracker.reportRate()));
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                    break;
+//                }
+//            }
+//        }).start();
     }
 
     public static void main(String[] args) {

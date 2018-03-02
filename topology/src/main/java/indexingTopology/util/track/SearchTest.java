@@ -13,9 +13,9 @@ public class SearchTest {
             String  querySelect = scanner.next();
             switch (querySelect){
                 case "1" : {
-                    long startTime = System.currentTimeMillis() - 30 * 1000;
+                    long startTime = System.currentTimeMillis() - 1000 * 1000;
                     long endTime = System.currentTimeMillis();
-                    String businessParams = "{\"city\":\"4403\",\"devbtype\":1,\"devid\":\"75736331\",\"startTime\":" + startTime + ",\"endTime\":" + endTime + "}";
+                    String businessParams = "{\"city\":\"2\",\"devbtype\":6,\"devid\":\"7\",\"startTime\":" + startTime + ",\"endTime\":" + endTime + "}";
                     TrackSearchWs trackSearchWs = new TrackSearchWs();
                     String queryResult = trackSearchWs.services(permissionParams, businessParams);
                     System.out.println(queryResult);
@@ -37,7 +37,7 @@ public class SearchTest {
                     break;
                 }
                 case "4" : {
-                    String searcRectangle = "{\"type\":\"rectangle\",\"leftTop\":\"110,25\",\"rightBottom\":\"115,20\",\"geoStr\":null,\"longitude\":null,\"latitude\":null,\"radius\":null}";
+                    String searcRectangle = "{\"type\":\"rectangle\",\"leftTop\":\"110,30\",\"rightBottom\":\"120,20\",\"geoStr\":null,\"longitude\":null,\"latitude\":null,\"radius\":null}";
                     PosSpacialSearchWs posSpacialSearchWs = new PosSpacialSearchWs();
                     String result = posSpacialSearchWs.service(null, searcRectangle);
                     System.out.println(result);

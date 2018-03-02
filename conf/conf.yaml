@@ -16,7 +16,7 @@
  old.data.previous.time: 24
 
 # default topic for kafka
- topic: "gpis"
+ topic: "1514"
 
 # default zookeeperIP for kafka
 # ZKhost: ["Slave2:2181","Slave3:2181"]
