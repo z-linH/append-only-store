@@ -418,7 +418,7 @@ public class DataSchema implements Serializable {
 
 
     public JSONObject getJsonFromDataTupleWithoutZcode(DataTuple tuple) { // filter zcode attribute and alter timestamp schema
-        int len = getNumberOfFields();
+        int len = tuple.size();
         JSONObject jsonObject = new JSONObject();
         for (int i = 0; i < len; i++) {
             if(getFieldName(i).equals("zcode")){

@@ -10,11 +10,21 @@ public class Circle implements Shape, Serializable{
     private double longitude;
     private double latitude;
     private double radius;
+    private int jzlx;
+    private int workstate;
 
     public Circle(double longitude, double latitude, double radius) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.radius = radius;
+    }
+
+    public Circle(double longitude, double latitude, double radius, int jzlx, int workstate) {
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.radius = radius;
+        this.jzlx = jzlx;
+        this.workstate = workstate;
     }
 
     public double getLongitude() {
@@ -34,6 +44,15 @@ public class Circle implements Shape, Serializable{
         double pointX = point.x, pointY = point.y;
         double len = Math.sqrt(Math.pow(pointX - longitude, 2) + Math.pow(pointY - latitude, 2));
         if(radius >= len) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean SpecialCheckIn(Point point, int jzlx, int workstate) {
+        double pointX = point.x, pointY = point.y;
+        double len = Math.sqrt(Math.pow(pointX - longitude, 2) + Math.pow(pointY - latitude, 2));
+        if(radius >= len && jzlx == this.jzlx && workstate == this.workstate) {
             return true;
         }
         return false;

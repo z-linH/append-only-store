@@ -4,9 +4,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.google.gson.JsonObject;
+import com.lmax.disruptor.InsufficientCapacityException;
 import indexingTopology.api.client.GeoTemporalQueryClient;
 import indexingTopology.api.client.GeoTemporalQueryRequest;
 import indexingTopology.api.client.QueryResponse;
+import indexingTopology.common.aggregator.AggregateField;
+import indexingTopology.common.aggregator.Aggregator;
+import indexingTopology.common.aggregator.Count;
 import indexingTopology.common.data.DataSchema;
 import indexingTopology.common.data.DataTuple;
 import indexingTopology.common.logics.DataTuplePredicate;
@@ -15,6 +20,7 @@ import indexingTopology.util.shape.Point;
 import indexingTopology.util.shape.Polygon;
 import indexingTopology.util.shape.Rectangle;
 import org.w3c.dom.css.Rect;
+import scala.collection.parallel.ParIterableLike;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,7 +46,23 @@ public class PosSpacialSearchWs {
         DataSchema schema = getDataSchema();
         try{
             JSONObject jsonObject = JSONObject.parseObject(businessParams);
-            String type = jsonObject.getString("type");
+            String type = jsonObject.getString("type"); // 查询类型
+            /**
+             * 特殊条件查询
+             */
+
+            int jzlx = jsonObject.getInteger("jzlx"); //车辆类型
+            int workstate = jsonObject.getInteger("workstate"); //工作状态
+            /**
+             * 统计查询
+             */
+            String groupId = jsonObject.getString("function");
+
+
+//            long startTime = jsonObject.getLong("startTime");
+//            long endTime = jsonObject.getLong("endTime");
+            long startTime = System.currentTimeMillis() - 600 * 1000;
+            long endTime = System.currentTimeMillis();
             Pattern p = null;
             boolean flag = true;
     //        System.out.println(geoArray.toString());
@@ -56,7 +78,13 @@ public class PosSpacialSearchWs {
                         flag = false;
                         break;
                     }
-                    Rectangle rectangle = initRectangel(rectLeftTop, rectRightBottom);
+                    Rectangle rectangle;
+                    if (jzlx != -1) {
+                        rectangle = initSpecialRectangel(rectLeftTop, rectRightBottom, jzlx, workstate);
+                    }else {
+                        rectangle = initRectangel(rectLeftTop, rectRightBottom);
+                    }
+//                    System.out.println(rectangle.getJzlx());
                     externalLeftTop = new Point(rectangle.getExternalRectangle().getLeftTopX(), rectangle.getExternalRectangle().getLeftTopY());
                     externalRightBottom = new Point(rectangle.getExternalRectangle().getRightBottomX(), rectangle.getExternalRectangle().getRightBottomY());
                     if (externalLeftTop.x > externalRightBottom.x || externalLeftTop.y < externalRightBottom.y) {
@@ -68,7 +96,11 @@ public class PosSpacialSearchWs {
                         System.out.println(queryResponse);
                         return queryResponse.toString();
                     }
-                    predicate = t -> rectangle.checkIn(new Point((Double)schema.getValue("longitude", t),(Double)schema.getValue("latitude", t)));
+                    if (jzlx != -1) {
+                        predicate = t -> rectangle.specialCheckIn(new Point((Double)schema.getValue("longitude", t),(Double)schema.getValue("latitude", t), (Integer) schema.getValue("jzlx", t), (Integer) schema.getValue("workstate", t)));
+                    }else {
+                        predicate = t -> rectangle.checkIn(new Point((Double)schema.getValue("longitude", t),(Double)schema.getValue("latitude", t)));
+                    }
                     break;
                 }
                 case "polygon" : {
@@ -97,10 +129,20 @@ public class PosSpacialSearchWs {
                         flag = false;
                         break;
                     }
-                    Circle circle = initCircle(longitude, latitude, circleradius);
+                    Circle circle;
+                    if (jzlx != -1) {
+                        circle = initSpecialCircle(longitude, latitude, circleradius, jzlx, workstate);
+                    }else {
+                        circle = initCircle(longitude, latitude, circleradius);
+                    }
+
                     externalLeftTop = new Point(circle.getExternalRectangle().getLeftTopX(), circle.getExternalRectangle().getLeftTopY());
                     externalRightBottom = new Point(circle.getExternalRectangle().getRightBottomX(), circle.getExternalRectangle().getRightBottomY());
-                    predicate = t -> circle.checkIn(new Point((Double)schema.getValue("longitude", t),(Double)schema.getValue("latitude", t)));
+                    if (jzlx != -1) {
+                        predicate = t -> circle.SpecialCheckIn(new Point((Double)schema.getValue("longitude", t),(Double)schema.getValue("latitude", t)), jzlx, workstate);
+                    }else {
+                        predicate = t -> circle.checkIn(new Point((Double)schema.getValue("longitude", t),(Double)schema.getValue("latitude", t)));
+                    }
                     break;
                 }
                 default: break;
@@ -118,19 +160,34 @@ public class PosSpacialSearchWs {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                //统计查询Aggregator
+                Aggregator aggregator = null;
+                if (!groupId.equals("null")) {
+                    aggregator = new Aggregator<>(schema, "hphm", new AggregateField(new Count(), "nums"));
+                }
                 GeoTemporalQueryRequest queryRequest = new GeoTemporalQueryRequest<>(xLow, xHigh, yLow, yHigh,
-                        System.currentTimeMillis() - 10 * 1000,
-                        System.currentTimeMillis(), predicate, null,null, null, null);
+                        startTime,
+                        endTime, predicate,null,aggregator, null, null);
                 System.out.println("xLow:" + xLow + " " + xHigh + " " +yLow + " " + yHigh);
                 try {
+                    //统计查询
                     QueryResponse response = queryClient.query(queryRequest);
                     List<DataTuple> tuples = response.getTuples();
                     System.out.println(tuples.size());
                     queryResult = new JSONArray();
                     for (DataTuple tuple : tuples){
-                        JSONObject jsonFromTuple = schema.getJsonFromDataTupleWithoutZcode(tuple);
+                        JSONObject jsonFromTuple = null;
+                        if (!groupId.equals("null")) {
+                            jsonFromTuple = new JSONObject();
+                            jsonFromTuple.put(groupId, tuple.get(0));
+                            jsonFromTuple.put("nums", tuple.get(1));
+                        }else {
+                            jsonFromTuple = schema.getJsonFromDataTupleWithoutZcode(tuple);
+                        }
                         queryResult.add(jsonFromTuple);
                         System.out.println(jsonFromTuple);
+
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -197,6 +254,14 @@ public class PosSpacialSearchWs {
         return circle;
     }
 
+    Circle initSpecialCircle(String longitude, String latitude, String radius, int jzlx, int workstate) {
+        double circlelon = Double.parseDouble(longitude);
+        double circlelat = Double.parseDouble(latitude);
+        double circlerad = Double.parseDouble(radius);
+        Circle circle = new Circle(circlelon, circlelat, circlerad, jzlx, workstate);
+        return circle;
+    }
+
     Rectangle initRectangel(String leftTop, String rightBottom) {
         double leftTop_x = Double.parseDouble(leftTop.split(",")[0]);
         double leftTop_y = Double.parseDouble(leftTop.split(",")[1]);
@@ -205,6 +270,17 @@ public class PosSpacialSearchWs {
         Point rectLeftTop = new Point(leftTop_x, leftTop_y);
         Point rectRightBottom = new Point(rightBottom_x, rightBottom_y);
         Rectangle rectangle = new Rectangle(rectLeftTop, rectRightBottom);
+        return rectangle;
+    }
+
+    Rectangle initSpecialRectangel(String leftTop, String rightBottom, int jzlx, int workstate) {
+        double leftTop_x = Double.parseDouble(leftTop.split(",")[0]);
+        double leftTop_y = Double.parseDouble(leftTop.split(",")[1]);
+        double rightBottom_x = Double.parseDouble(rightBottom.split(",")[0]);
+        double rightBottom_y = Double.parseDouble(rightBottom.split(",")[1]);
+        Point rectLeftTop = new Point(leftTop_x, leftTop_y);
+        Point rectRightBottom = new Point(rightBottom_x, rightBottom_y);
+        Rectangle rectangle = new Rectangle(rectLeftTop, rectRightBottom, jzlx, workstate);
         return rectangle;
     }
 

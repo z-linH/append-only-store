@@ -37,7 +37,10 @@ public class SearchTest {
                     break;
                 }
                 case "4" : {
-                    String searcRectangle = "{\"type\":\"rectangle\",\"leftTop\":\"10,1000\",\"rightBottom\":\"1000,10\",\"geoStr\":null,\"longitude\":null,\"latitude\":null,\"radius\":null}";
+                    long startTime = System.currentTimeMillis() - 30 * 1000;
+                    long endTime = System.currentTimeMillis();
+                    String searcRectangle = "{\"type\":\"rectangle\",\"searchType\":\"special\",\"jzlx\":2,\"workstate\":2,\"groupId\":\"workstate\"," +
+                            "\"leftTop\":\"10,1000\",\"rightBottom\":\"1000,10\"}";
                     PosSpacialSearchWs posSpacialSearchWs = new PosSpacialSearchWs();
                     String result = posSpacialSearchWs.service(null, searcRectangle);
                     System.out.println(result);
@@ -54,10 +57,21 @@ public class SearchTest {
 //                    String searchPolygon = "{\"type\":\"polygon\",\"leftTop\":null,\"rightBottom\":null,\"geoStr\":[\"70 70\",\"85 80\",\"90 75\",\"85 70\",\"70 70\"],\"lon\":null,\"lat\":null,\"radius\":null}";
 //                    String searchPolygon = "{\"type\":\"polygon\",\"leftTop\":null,\"rightBottom\":null,\"geoSt" +
 //                            "r\":[\"80 60\",\"120 60\",\"120 80\",\"80 80\"],\"lon\":null,\"lat\":null,\"radius\":null}";
-                    String searchPolygon = "{\"type\":\"polygon\",\"leftTop\":null,\"rightBottom\":null,\"geoSt" +
+                    String searchPolygon = "{\"type\":\"polygon\",\"searchType\":\"null\",\"jzlx\":2,\"workstate\":2,\"leftTop\":null,\"rightBottom\":null,\"geoSt" +
                             "r\":[\"100 10\",\"120 10\",\"120 30\",\"100 30\"],\"lon\":null,\"lat\":null,\"radius\":null}";
                     PosSpacialSearchWs posSpacialSearchWs = new PosSpacialSearchWs();
                     String result = posSpacialSearchWs.service(null, searchPolygon);
+                    System.out.println(result);
+                    break;
+                }
+                case "７" : {
+//                    String searchPolygon = "{\"type\":\"polygon\",\"leftTop\":null,\"rightBottom\":null,\"geoStr\":[\"70 70\",\"85 80\",\"90 75\",\"85 70\",\"70 70\"],\"lon\":null,\"lat\":null,\"radius\":null}";
+//                    String searchPolygon = "{\"type\":\"polygon\",\"leftTop\":null,\"rightBottom\":null,\"geoSt" +
+//                            "r\":[\"80 60\",\"120 60\",\"120 80\",\"80 80\"],\"lon\":null,\"lat\":null,\"radius\":null}";
+                    String searchRectangle = "{\"type\":\"rectangle\",\"searchType\":\"special\",\"jzlx\":2,\"workstate\":2,\"leftTop\":\"10,1000\",\"rightBottom\":\"1000,10\"," +
+                            "\"geoStr\":null,\"longitude\":null,\"latitude\":null,\"radius\":null}";
+                    PosSpacialSearchWs posSpacialSearchWs = new PosSpacialSearchWs();
+                    String result = posSpacialSearchWs.service(null, searchRectangle);
                     System.out.println(result);
                     break;
                 }
