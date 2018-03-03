@@ -26,7 +26,7 @@ public class KafkaSourceTest {
 
     public void sourceProducer(){
         long start = System.currentTimeMillis();
-        TrajectoryGenerator generator = new TrajectoryMovingGenerator(x1, x2, y1, y2, 100000, 45.0);
+        TrajectoryGenerator generator = new TrajectoryMovingGenerator(x1, x2, y1, y2, 10000, 60 * 10);
         JsonTest jsonTest = new JsonTest();
         String regEx = "[`~!@#$%^&*()+=|{}';'\\[\\]<>/?~！@#�%……&*（）——+|{}【】‘；：”“’。，、？]";
         Pattern p = Pattern.compile(regEx);
@@ -35,14 +35,14 @@ public class KafkaSourceTest {
 //        IngestionKafkaBatchMode kafkaBatchMode = new IngestionKafkaBatchMode("10.21.25.203:9092,10.21.25.203:9092,10.21.25.203:9092", "gpis");
         IngestionKafkaBatchMode kafkaBatchMode = new IngestionKafkaBatchMode("localhost:9092", "1514");
         kafkaBatchMode.ingestProducer();
-        int total = 1000;
-        FrequencyRestrictor restrictor = new FrequencyRestrictor(1000, 5);
-        RateTracker rateTracker = new RateTracker(1000, 5);
+        int batchSize = 100;
+//        FrequencyRestrictor restrictor = new FrequencyRestrictor(1000, 5);
+//        RateTracker rateTracker = new RateTracker(1000, 5);
         Thread emittingThread = null;
         emittingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    for (int i = 0; i < total; i++) {
+                    for (int i = 0; i < batchSize; i++) {
 //                        restrictor.getPermission();
 //                        rateTracker.notify(1);
                         Car car = generator.generate();
@@ -60,17 +60,17 @@ public class KafkaSourceTest {
                         String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
 //                            System.out.println(devbtype);
 //                            String Msg = "{\"lon\":"+ car.x + ",\"lat\":" + car.y + ",\"devbtype\":"+ devbtype +",\"devid\":\"asd\",\"city\":\"4401\",\"locationtime\":" + System.currentTimeMillis() +  "}";
-//                        if (i  < total/2) {
-//                        if(i < 0){
+//                        if (i  < batchSize/2) {
+////                        if(i < 0){
 //                            String Msg = jsonTest.CheckJingyiJson(1);
 ////                            String Msg = "{\"asd\":\"\",\"reserve1\":\"1\",\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
 ////                                    "\"ssdwmc\":\"字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数字数\",\"teamno\":\"44010001\",}";
 //                            kafkaBatchMode.send(i, Msg);
 //                        } else {
-                            String Msg = "{\"devbtype\":" + devbtype + ",\"devstype\":" + 123 + ",\"devid\":\"" + devid + "\",\"city\":\"" + city + "\",\"longitude\":" + car.x + ",\"latitude\":" + car.y
-                                    + ",\"altitude\":2000.0," +
+                            String Msg = "{\"devbtype\":" + 11 + ",\"devstype\":" + 123 + ",\"devid\":\"" + car.id + "\",\"city\":\"4406\",\"longitude\":" + car.x + ",\"latitude\":" + car.y
+                                    + ",\"altitude\":\"0\"," +
                                     "\"speed\":\"0\",\"direction\":\"0\",\"locationtime\":\"" + currentTime + "\",\"workstate\":\"1\",\"clzl\":\"\",\"hphm\":\"\",\"jzlx\":\"7\",\"jybh\":\"100011\"," +
-                                    "\"jymc\":\"陈国基\",\"lxdh\":\"13576123212\",\"dth\":\"\",\"reserve1\":\"1\",\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
+                                    "\"jymc\":\"姓名测试\",\"lxdh\":\"13576123212\",\"dth\":\"\",\"reserve1\":\"1\",\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
                                     "\"ssdwmc\":\"a\",\"teamno\":\"44010001\"}";
 
 //                            String Msg = "{\"devbtype\":" + devbtype + ",\"devstype\":" + 123 + ",\"devid\":\"" + devid + "\",\"city\":\"" + city + "\",\"longitude\":" + 113.123123 + ",\"latitude\":" + car.x
@@ -84,7 +84,8 @@ public class KafkaSourceTest {
 //                                    "\"jymc\":\"陈国基\",\"lxdh\":\"13576123212\",\"dth\":\"SG0000000352\",\"reserve1\":null,\"reserve2\":\"\",\"reserve3\":\"\",\"ssdwdm\":\"440100000000\"," +
 //                                    "\"ssdwmc\":\"广州市\",\"teamno\":\"44010001\"}";
 //                            String   Msg = "{\"devbtype\":" + 10 + ",\"devstype\":\"123\"}";
-//                            System.out.println(currentTime);
+                            System.out.println(Msg);
+                            System.out.println(System.currentTimeMillis());
                             kafkaBatchMode.send(i, Msg);
 //                        }
                         //                        this.producer.send(new ProducerRecord<String, String>("consumer",
@@ -102,7 +103,7 @@ public class KafkaSourceTest {
                     kafkaBatchMode.flush();
                     //            producer.close();
                     System.out.println("Kafka Producer send msg over,cost time:" + (System.currentTimeMillis() - start) + "ms");
-                    Thread.sleep(Long.MAX_VALUE);
+                    Thread.sleep(100000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -113,7 +114,7 @@ public class KafkaSourceTest {
 //        new Thread(() -> {
 //            while(true) {
 //                try {
-//                    Thread.sleep(100000);
+//                    Thread.sleep(1000);
 //                    System.out.println(String.format("%.1f tuples / s.", rateTracker.reportRate()));
 //                } catch (InterruptedException e) {
 //                    e.printStackTrace();
