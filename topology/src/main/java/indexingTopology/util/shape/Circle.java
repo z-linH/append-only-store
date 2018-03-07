@@ -49,11 +49,15 @@ public class Circle implements Shape, Serializable{
         return false;
     }
 
-    public boolean SpecialCheckIn(Point point, int jzlx, int workstate) {
+    public boolean SpecialCheckIn(Point point) {
         double pointX = point.x, pointY = point.y;
         double len = Math.sqrt(Math.pow(pointX - longitude, 2) + Math.pow(pointY - latitude, 2));
-        if(radius >= len && jzlx == this.jzlx && workstate == this.workstate) {
-            return true;
+        if(radius >= len) {
+            if ((point.jzlx == this.jzlx && point.workstate == this.workstate) || (this.jzlx == 0 && point.workstate == this.workstate)
+                    || (point.jzlx == this.jzlx && this.workstate == 0)) {
+                return true;
+            }
+            return false;
         }
         return false;
     }

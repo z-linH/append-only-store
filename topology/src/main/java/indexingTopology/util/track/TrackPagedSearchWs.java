@@ -94,7 +94,6 @@ public class TrackPagedSearchWs implements Serializable{
         try {
             QueryResponse response = queryClient.query(queryRequest);
             DataSchema outputSchema = response.getSchema();
-            System.out.println("datatuples : " + response.dataTuples.size());
             List<DataTuple> tuples = response.getTuples();
 
             int totalPage = tuples.size()/rows;
@@ -111,6 +110,7 @@ public class TrackPagedSearchWs implements Serializable{
                     System.out.println(jsonFromTuple);
                 }
             }
+            System.out.println("datatuples : " + response.dataTuples.size());
             JSONObject result = new JSONObject();
             result.put("total", tuples.size());
             result.put("page",page);

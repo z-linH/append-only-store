@@ -1,6 +1,5 @@
 package sentosa.query.naive;
 
-
 import sentosa.Utils.Utils;
 import sentosa.config.Config;
 import sentosa.query.Interface.*;

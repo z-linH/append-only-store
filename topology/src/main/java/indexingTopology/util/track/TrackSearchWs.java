@@ -113,7 +113,6 @@ public class TrackSearchWs implements Serializable{
         try {
             QueryResponse response = queryClient.query(queryRequest);
             DataSchema outputSchema = response.getSchema();
-            System.out.println("datatuples : " + response.dataTuples.size());
             List<DataTuple> tuples = response.getTuples();
 
             queryResponse.put("success", true);
@@ -123,6 +122,7 @@ public class TrackSearchWs implements Serializable{
                 queryResult.add(jsonFromTuple);
                 System.out.println(jsonFromTuple);
             }
+            System.out.println("datatuples : " + response.dataTuples.size());
             queryResponse.put("result", queryResult);
             queryResponse.put("errorCode", null);
             queryResponse.put("errorMsg", null);

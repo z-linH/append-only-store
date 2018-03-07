@@ -13,10 +13,10 @@ public class Rectangle implements Shape, Serializable{
     private int workstate;
 
     public Rectangle(Point leftTop, Point rightBottom) {
-        this.leftTopX = leftTop.x;
-        this.leftTopY = leftTop.y;
-        this.rightBottomX = rightBottom.x;
-        this.rightBottomY = rightBottom.y;
+        this.leftTopX = Math.min(leftTop.x, rightBottom.x);
+        this.leftTopY = Math.max(leftTop.y, rightBottom.y);
+        this.rightBottomX = Math.max(leftTop.x, rightBottom.x);
+        this.rightBottomY = Math.min(leftTop.y, rightBottom.y);
     }
 
     public Rectangle(Point leftTop, Point rightBottom, int jzlx, int workstate) {
@@ -63,7 +63,8 @@ public class Rectangle implements Shape, Serializable{
     public boolean specialCheckIn(Point point) {
         double pointX = point.x, pointY = point.y;
         if((pointX <= rightBottomX && pointX >= leftTopX) && (pointY <= leftTopY && pointY >= rightBottomY)) {
-            if (point.jzlx == this.jzlx && point.workstate == this.workstate) {
+            if ((point.jzlx == this.jzlx && point.workstate == this.workstate) || (this.jzlx == 0 && point.workstate == this.workstate)
+                    || (point.jzlx == this.jzlx && this.workstate == 0)) {
                 return true;
             }else {
                 return false;
