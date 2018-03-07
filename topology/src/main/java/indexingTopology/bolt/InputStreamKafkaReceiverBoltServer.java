@@ -146,6 +146,7 @@ public class InputStreamKafkaReceiverBoltServer extends InputStreamReceiverBolt 
                             e.printStackTrace();
                             continue;
                         } catch (JSONException e){
+                            e.printStackTrace();
                             System.out.println("Record error : Json format exception!The json is " + record.value());
 //                            e.printStackTrace();
                             continue;

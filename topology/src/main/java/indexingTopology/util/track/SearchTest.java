@@ -36,28 +36,41 @@ public class SearchTest {
                     break;
                 }
                 case "4" : {
-                    String searcRectangle = "{\"type\":\"rectangle\",\"leftTop\":\"110,30\",\"rightBottom\":\"120,20\",\"geoStr\":null,\"longitude\":null,\"latitude\":null,\"radius\":null}";
+                    String searcRectangle = "{\"type\":\"rectangle\",\"searchType\":\"special\",\"jzlx\":2,\"workstate\":2,\"groupId\":\"workstate\"," +
+                            "\"leftTop\":\"10,1000\",\"rightBottom\":\"1000,10\"}";
                     PosSpacialSearchWs posSpacialSearchWs = new PosSpacialSearchWs();
-                    String result = posSpacialSearchWs.service(null, searcRectangle, startTime, endTime, null);
-                    System.out.println(result);
+//                    String result = posSpacialSearchWs.service(null, searcRectangle, startTime, endTime, null);
+//                    System.out.println(result);
                     break;
                 }
+
                 case "5" : {
                     String searchCircle = "{\"type\":\"circle\",\"leftTop\":null,\"rightBottom\":null,\"geoStr\":null,\"longitude\":110,\"latitude\":20,\"radius\":10}";
                     PosSpacialSearchWs posSpacialSearchWs = new PosSpacialSearchWs();
-                    String result = posSpacialSearchWs.service(null, searchCircle, startTime, endTime, null);
-                    System.out.println(result);
+//                    String result = posSpacialSearchWs.service(null, searchCircle, startTime, endTime, null);
+//                    System.out.prinletln(result);
                     break;
                 }
                 case "6" : {
 //                    String searchPolygon = "{\"type\":\"polygon\",\"leftTop\":null,\"rightBottom\":null,\"geoStr\":[\"70 70\",\"85 80\",\"90 75\",\"85 70\",\"70 70\"],\"lon\":null,\"lat\":null,\"radius\":null}";
 //                    String searchPolygon = "{\"type\":\"polygon\",\"leftTop\":null,\"rightBottom\":null,\"geoSt" +
 //                            "r\":[\"80 60\",\"120 60\",\"120 80\",\"80 80\"],\"lon\":null,\"lat\":null,\"radius\":null}";
-                    String searchPolygon = "{\"type\":\"polygon\",\"leftTop\":null,\"rightBottom\":null,\"geoSt" +
+                    String searchPolygon = "{\"type\":\"polygon\",\"searchType\":\"null\",\"jzlx\":2,\"workstate\":2,\"leftTop\":null,\"rightBottom\":null,\"geoSt" +
                             "r\":[\"100 10\",\"120 10\",\"120 30\",\"100 30\"],\"lon\":null,\"lat\":null,\"radius\":null}";
                     PosSpacialSearchWs posSpacialSearchWs = new PosSpacialSearchWs();
-                    String result = posSpacialSearchWs.service(null, searchPolygon, startTime, endTime, null);
-                    System.out.println(result);
+//                    String result = posSpacialSearchWs.service(null, searchPolygon, startTime, endTime, null);
+//                    System.out.println(result);
+                    break;
+                }
+                case "７" : {
+//                    String searchPolygon = "{\"type\":\"polygon\",\"leftTop\":null,\"rightBottom\":null,\"geoStr\":[\"70 70\",\"85 80\",\"90 75\",\"85 70\",\"70 70\"],\"lon\":null,\"lat\":null,\"radius\":null}";
+//                    String searchPolygon = "{\"type\":\"polygon\",\"leftTop\":null,\"rightBottom\":null,\"geoSt" +
+//                            "r\":[\"80 60\",\"120 60\",\"120 80\",\"80 80\"],\"lon\":null,\"lat\":null,\"radius\":null}";
+                    String searchRectangle = "{\"type\":\"rectangle\",\"searchType\":\"special\",\"jzlx\":2,\"workstate\":2,\"leftTop\":\"10,1000\",\"rightBottom\":\"1000,10\"," +
+                            "\"geoStr\":null,\"longitude\":null,\"latitude\":null,\"radius\":null}";
+                    PosSpacialSearchWs posSpacialSearchWs = new PosSpacialSearchWs();
+//                    String result = posSpacialSearchWs.service(null, searchRectangle);
+//                    System.out.println(result);
                     break;
                 }
                 default : break;

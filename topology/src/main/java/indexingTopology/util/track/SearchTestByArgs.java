@@ -68,10 +68,6 @@ public class SearchTestByArgs {
     static final double y1 = 25.292677;
     static final double y2 = 21.614865;
 
-    double leftTop_x;
-    double leftTop_y;
-    double rightBottom_x;
-    double rightBottom_y;
 
     public static void main(String[] args) {
 
@@ -151,11 +147,13 @@ public class SearchTestByArgs {
                     double leftTop_y = y1;
                     double rightBottom_x = x2;
                     double rightBottom_y = y2;
-                    Rectangle rectangle = new Rectangle(new Point(leftTop_x, leftTop_y), new Point(rightBottom_x, rightBottom_y));
-                    double percentage = Double.parseDouble(Percent);
-                    if (percentage >= 0 && percentage < 1) {
-                        rectangle = zoomInRectangle(percentage);
-                    }
+//                    Rectangle rectangle = new Rectangle(new Point(leftTop_x, leftTop_y), new Point(rightBottom_x, rightBottom_y));
+//                    double percentage = Double.parseDouble(Percent);
+//                    if (percentage >= 0 && percentage < 1) {
+//                        rectangle = zoomInRectangle(percentage);
+//                    }
+
+                    Rectangle rectangle = GetPercentRect();
                     LeftTop = rectangle.getLeftTopX() + "," + rectangle.getLeftTopY();
                     RightBottom = rectangle.getRightBottomX() + "," + rectangle.getRightBottomY();
                     String searchRectangle = "{\"type\":\"rectangle\",\"leftTop\":\"" + LeftTop + "\",\"rightBottom\":\"" + RightBottom
@@ -163,7 +161,7 @@ public class SearchTestByArgs {
                             ",\"endTime\":" + endTime + "}";
                     long start = System.currentTimeMillis();
                     System.out.println(String.format("%f-%f, %f-%f", leftTop_x, rightBottom_x, leftTop_y, rightBottom_y));
-                    posSpacialSearchWs.service(null, searchRectangle, startTime, endTime, id);
+//                    posSpacialSearchWs.service(null, searchRectangle, startTime, endTime, id);
                     long end = System.currentTimeMillis();
                     long useTime = end - start;
                     System.out.println("Response time: " + useTime + "ms");
@@ -188,7 +186,7 @@ public class SearchTestByArgs {
                             + longitude + ",\"latitude\":" + latitude + ",\"radius\":" + radius + ",\"startTime\":" + startTime +
                             ",\"endTime\":" + endTime + "}";
                     long start = System.currentTimeMillis();
-                    posSpacialSearchWs.service(null, searchCircle, startTime, endTime, id);
+//                    posSpacialSearchWs.service(null, searchCircle, startTime, endTime, id);
                     long end = System.currentTimeMillis();
                     long useTime = end - start;
                     System.out.println("Response time: " + useTime + "ms");
@@ -209,7 +207,7 @@ public class SearchTestByArgs {
                 String searchPolygon = "{\"type\":\"polygon\",\"leftTop\":null,\"rightBottom\":null,\"geoSt" +
                         "r\":" + geostr + ",\"lon\":null,\"lat\":null,\"radius\":null,\"startTime\":" + startTime +
                         ",\"endTime\":" + endTime + "}";
-                result = posSpacialSearchWs.service(null, searchPolygon, startTime, endTime, id);
+//                result = posSpacialSearchWs.service(null, searchPolygon, startTime, endTime, id);
                 System.out.println(result);
                 long end = System.currentTimeMillis();
                 long useTime = end - start;
@@ -221,6 +219,10 @@ public class SearchTestByArgs {
     }
 
     Rectangle GetPercentRect () {
+        double leftTop_x = Double.parseDouble(LeftTop.split(",")[0]) - 1;
+        double leftTop_y = Double.parseDouble(LeftTop.split(",")[1]) + 1;
+        double rightBottom_x = Double.parseDouble(RightBottom.split(",")[0]) + 1;
+        double rightBottom_y = Double.parseDouble(RightBottom.split(",")[1]) - 1;
         double percent = Double.parseDouble(Percent);
         double xLen = (x2 - x1) * (1 - percent);
         double yLen = (y1 - y2) * (1 - percent);
