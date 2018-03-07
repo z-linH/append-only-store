@@ -11,7 +11,6 @@ import indexingTopology.common.data.DataSchema;
 import indexingTopology.common.data.DataTuple;
 import indexingTopology.common.logics.DataTuplePredicate;
 import indexingTopology.util.shape.Circle;
-import indexingTopology.util.shape.Circle2;
 import indexingTopology.util.shape.Point;
 import indexingTopology.util.shape.TrackItem;
 
