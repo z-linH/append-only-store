@@ -33,7 +33,7 @@ public class KafkaSourceTest {
 //        IngestionKafkaBatchMode kafkaBatchMode = new IngestionKafkaBatchMode("10.21.25.203:9092,10.21.25.203:9092,10.21.25.203:9092", "gpis");
         IngestionKafkaBatchMode kafkaBatchMode = new IngestionKafkaBatchMode("localhost:9092", "gpis");
         kafkaBatchMode.ingestProducer();
-        int total = 100;
+        int total = 10;
         Thread emittingThread = null;
         emittingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {

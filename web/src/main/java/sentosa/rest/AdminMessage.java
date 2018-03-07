@@ -40,7 +40,7 @@ public class AdminMessage {
             NaiveQueryImpl.instance().setAdminMessage(message);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("response", result);
-            return result;
+            return jsonObject.toString();
         }
     }
 }
