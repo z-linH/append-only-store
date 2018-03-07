@@ -72,9 +72,32 @@ public class KafkaSourceTest {
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date date = formatter.parse(sDateTime); // 把String类型转换为Date类型
                         String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
-//                        if (i  < total/2) {
-//                            String Msg = jsonTest.CheckJingyiJson(1);
-//                        } else {
+                        if (i  < 40) {
+                            Random random = new Random();
+                            int randomValue = random.nextInt(5000) + 1;
+                            String Msg = "{\"devbtype\":" + getRandomDevbtype() + "," +
+                                    "\"devstype\":\"" + getRandomCarDetial(carDetailList.get(randomValue),6) + "\"," +
+                                    "\"devid\":\"" + getRandomDevid() +
+//                                    "\",\"city\":\"" + getRandomCity() +    // exchange the city value
+                                    "\",\"city\":\"" + getCityIDByName(carLocationList.get(randomValue),11) +   //exchange the city value
+                                    "\",\"longitude\":" + getRandomCarLocation(carLocationList.get(randomValue),4) +
+                                    ",\"latitude\":" + getRandomCarLocation(carLocationList.get(randomValue),5)+ "," +
+//                                    "\"altitude\":\"" + getRandomCarLocation(carLocationList.get(randomValue),6) + "\"," +
+                                    "\"speed\":\"" + getRandomCarLocation(carLocationList.get(randomValue),7) + "\","+
+                                    "\"direction\":\"" + getRandomCarLocation(carLocationList.get(randomValue),8) +
+                                    "\",\"locationtime\":\"" + getRandomCarLocation(carLocationList.get(randomValue),3) +
+                                    "\",\"workstate\":\"" + getRandomWorkstate() + "\"," +
+                                    "\"hphm\":\"" + getRandomCarDetial(carDetailList.get(randomValue),2) +
+                                    "\",\"jzlx\":\"" + getRandomJzlx() +
+                                    "\",\"jybh\":\"" + getRandomCarDetial(carDetailList.get(randomValue),8) + "\"," +
+                                    "\"jymc\":\"" + nameList.get(randomValue) +
+                                    "\",\"reserve1\":\"" + getRandomReserve1() +
+                                    "\",\"ssdwdm\":\"" + getRandomCarDetial(carDetailList.get(randomValue),3)+
+                                    "\",\"ssdwmc\":\"a\"," +
+                                    "\"teamno\":\"" + getRandomCarDetial(carDetailList.get(randomValue),8) + "\"}";
+                            System.out.println(Msg);
+                            kafkaBatchMode.send(i, Msg);
+                        } else {
                             Random random = new Random();
                             int randomValue = random.nextInt(5000) + 1;
 //                            String Msg = "{\"devbtype\":" + 11 + ",\"devstype\":" + 123 + ",\"devid\":\"75736331\",\"city\":\"4406\",\"longitude\":" + car.x + ",\"latitude\":" + car.y
@@ -119,7 +142,7 @@ public class KafkaSourceTest {
 //                            System.out.println(currentTime);
                             System.out.println(Msg);
                             kafkaBatchMode.send(i, Msg);
-//                        }
+                        }
                         //                        this.producer.send(new ProducerRecord<String, String>("consumer",
                         //                                String.valueOf(i), "{\"employees\":[{\"firstName\":\"John\",\"lastName\":\"Doe\"},{\"firstName\":\"Anna\",\"lastName\":\"Smith\"},{\"firstName\":\"Peter\",\"lastName\":\"Jones\"}]}"));
                         //                        String.format("{\"type\":\"test\", \"t\":%d, \"k\":%d}", System.currentTimeMillis(), i)));
@@ -245,9 +268,10 @@ public class KafkaSourceTest {
     }
 
     String getRandomDevid() {
-        String name[] = {"100011","100012","100013","100014","100015","100016","100017"};
+        String name[] = {"83696","78216","81905"};
+//        String name[] = {"1364883696","1364878216","1364881905","1364882716","1364882347","1364884081","1364880892"};
         Random random = new Random();
-        int num = random.nextInt(7);
+        int num = random.nextInt(3);
         return name[num];
     }
 
