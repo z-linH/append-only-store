@@ -232,7 +232,9 @@ public class PosSpacialSearchWs {
 
                 //统计查询Aggregator
                 aggregator = null;
-                if (!groupId.equals("null")) {
+                if (groupId.equals("count")) {
+                    aggregator = new Aggregator<>(schema, "jzlx", new AggregateField(new Count(), "nums"));
+                }else if (!groupId.equals("count") && !groupId.equals("null")) {
                     aggregator = new Aggregator<>(schema, "hphm", new AggregateField(new Count(), "nums"));
                 }
                 GeoTemporalQueryRequest queryRequest = new GeoTemporalQueryRequest<>(xLow, xHigh, yLow, yHigh,
@@ -248,15 +250,21 @@ public class PosSpacialSearchWs {
                     System.out.println(tuples.size());
                     queryResult = new JSONArray();
                     JSONObject jsonFromTuple = null;
-                    if (groupId.equals("hour") || groupId.equals("min")) {
-                        float aveTime;
-                        if (groupId.equals("min")) {
-                            aveTime = (endTime - startTime) / (1000 * 60);
-                        } else {
-                            aveTime = (endTime - startTime) / (1000 * 60 * 60);
+                    if (!groupId.equals("null")) {
+                        float nums;
+                        if (groupId.equals("hour") || groupId.equals("min")){
+
+                            float aveTime;
+                            if (groupId.equals("min")) {
+                                aveTime = (endTime - startTime) / (1000 * 60);
+                            } else {
+                                aveTime = (endTime - startTime) / (1000 * 60 * 60);
+                            }
+                            if (aveTime == 0) aveTime = 1;
+                            nums = tuples.size() / aveTime;
+                        }else {
+                            nums = tuples.size();
                         }
-                        if (aveTime == 0) aveTime = 1;
-                        float nums = tuples.size() / aveTime;
                         jsonFromTuple = new JSONObject();
                         jsonFromTuple.put("nums", nums);
                         queryResult.add(jsonFromTuple);

@@ -54,14 +54,9 @@ public class AdminMessage {
 //        } else {
         NaiveQueryImpl.instance().setAdminMessage(message);
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("response", GZIPUtils.compress(result));
+            jsonObject.put("response",result);
 //        System.out.println(result.length());
 //        JSONObject jsonObject = JSONObject.parseObject(result);
-        System.out.println("原长度：" + result.length());
-        System.out.println("压缩后长度" + GZIPUtils.compress(result).length());
-        System.out.println("------------------------------------------------------------");
-        String s = GZIPUtils.compress(result);
-        System.out.println(GZIPUtils.uncompress(s));
         return jsonObject;
 //        }
     }
