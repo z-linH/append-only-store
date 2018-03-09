@@ -2,6 +2,7 @@ package sentosa.rest;
 
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import indexingTopology.util.track.PosNonSpacialSearchWs;
 import indexingTopology.util.track.PosSpacialSearchWs;
@@ -53,8 +54,8 @@ public class AdminMessage {
 //            return jsonObject.toString();
 //        } else {
         NaiveQueryImpl.instance().setAdminMessage(message);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("response",result);
+            JSONObject jsonObject = JSON.parseObject(result);
+//            jsonObject.put("response",result);
 //        System.out.println(result.length());
 //        JSONObject jsonObject = JSONObject.parseObject(result);
         return jsonObject;
