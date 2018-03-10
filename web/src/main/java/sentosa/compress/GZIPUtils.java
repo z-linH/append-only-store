@@ -1,6 +1,9 @@
 package sentosa.compress;
 
 
+
+import org.apache.commons.codec.binary.Base64;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,34 +16,62 @@ import java.util.zip.GZIPOutputStream;
 
 public class GZIPUtils {
 
-    static String  code="UTF-8";
-    public static String compress(String str) throws IOException {
-        System.out.println("压缩之前的字符串大小："+str.length());
-        if (str == null || str.length() == 0) {
-            return str;
+    public static String CompressToBase64(String string){
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream(string.length());
+            GZIPOutputStream gos = new GZIPOutputStream(os);
+            gos.write(string.getBytes());
+            gos.close();
+            byte[] compressed = os.toByteArray();
+            os.close();
+
+
+            String result = Base64.encodeBase64String(compressed);
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+
+
+
+
         }
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        GZIPOutputStream gzip = new GZIPOutputStream(out);
-        gzip.write(str.getBytes());
-        gzip.close();
-        return out.toString("ISO-8859-1");
+        catch (Exception ex){
+
+
+        }
+        return "";
     }
 
-    public static String uncompress(String str) throws IOException {
-        System.out.println("压缩之后的字符串大小："+str.length());
-        if (str == null || str.length() == 0) {
-            return str;
+
+    public static String DecompressToBase64(String textToDecode){
+        //String textToDecode = "H4sIAAAAAAAAAPNIzcnJBwCCidH3BQAAAA==\n";
+        try {
+            byte[] compressed = Base64.decodeBase64(textToDecode);
+            final int BUFFER_SIZE = 32;
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(compressed);
+
+
+            GZIPInputStream gis  = new GZIPInputStream(inputStream, BUFFER_SIZE);
+
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] data = new byte[BUFFER_SIZE];
+            int bytesRead;
+            while ((bytesRead = gis.read(data)) != -1) {
+                baos.write(data, 0, bytesRead);
+            }
+
+
+            return baos.toString("UTF-8");
         }
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ByteArrayInputStream in = new ByteArrayInputStream(str.getBytes("ISO-8859-1"));
-        GZIPInputStream gunzip = new GZIPInputStream(in);
-        byte[] buffer = new byte[256];
-        int n;
-        while ((n = gunzip.read(buffer)) >= 0) {
-            out.write(buffer, 0, n);
+        catch (IOException e) {
+            e.printStackTrace();
         }
-        return out.toString();
+        catch (Exception ex){
+
+
+        }
+        return "";
     }
 }
-
 

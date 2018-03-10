@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import indexingTopology.util.track.PosNonSpacialSearchWs;
 import indexingTopology.util.track.PosSpacialSearchWs;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import sentosa.compress.GZIPUtils;
 import sentosa.query.naive.NaiveQueryImpl;
@@ -30,11 +31,11 @@ public class AdminMessage {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject getWarningMessage(@DefaultValue("null") @QueryParam("message") String message) throws IOException {
+    public String getWarningMessage(@DefaultValue("null") @QueryParam("message") String message) throws IOException {
         String str = message.replace('[','{');
         str = str.replace(']','}');
 
-        System.out.println(str);
+//        System.out.println(str);
 //        TrackSpacialSearchWs trackSpacialSearch = new TrackSpacialSearchWs();
 //        String result = trackSpacialSearch.services(null,str);
 
@@ -46,7 +47,8 @@ public class AdminMessage {
 
         PosSpacialSearchWs posSpacialSearchWs = new PosSpacialSearchWs();
         String result = posSpacialSearchWs.service(null, str);
-        System.out.println(result);
+//        System.out.println(result);
+//        System.out.println(GZIPUtils.uncompress("����".getBytes("UTF-8")));
 //        System.out.println(str);
 //        if (message.equals("null")) {
 //            JSONObject jsonObject = new JSONObject();
@@ -54,11 +56,23 @@ public class AdminMessage {
 //            return jsonObject.toString();
 //        } else {
         NaiveQueryImpl.instance().setAdminMessage(message);
-            JSONObject jsonObject = JSON.parseObject(result);
+        System.out.println(GZIPUtils.CompressToBase64(result));
+        System.out.println("ssssss" + result.length());
+        String bytes = GZIPUtils.CompressToBase64(result);
+        System.out.println("llllll" + bytes.length());
+        System.out.println(GZIPUtils.DecompressToBase64(bytes));
+        System.out.println("");
+//        String s = "eyJyZXN1bHQiOlt7Im51bXMiOjIwOTIuMH1dLCJzdWNjZXNzIjp0cnVlLCJlcnJvckNvZGUiOm51bGwsImVycm9yTXNnIjpudWxsfQ==";
+//        System.out.println("this  is ss       " + GZIPUtils.uncompress(GZIPUtils.compress("eyJyZXN1bHQiOlt7Im51bXMiOjIwOTIuMH1dLCJzdWNjZXNzIjp0cnVlLCJlcnJvckNvZGUiOm51bGwsImVycm9yTXNnIjpudWxsfQ==")));
+//            JSONObject jsonObject = JSON.parseObject(result);
 //            jsonObject.put("response",result);
 //        System.out.println(result.length());
 //        JSONObject jsonObject = JSONObject.parseObject(result);
-        return jsonObject;
+//        return GZIPUtils.compress(result.getBytes());
 //        }
+        String s = "H4sIAAAAAAAAAKtWKkotLs0pUbKKrlbKK80tVrIyMrKw1DOojdVRKi5NTk4tBgqVFJWm6iilFhXlFznnp6QqWeWV5uRABXyL0yH8WgBaOAygTAAAAA==";
+        System.out.println(GZIPUtils.DecompressToBase64(s));
+        return bytes;
+//        return GZIPUtils.uncompress(GZIPUtils.compress(result));
     }
 }
